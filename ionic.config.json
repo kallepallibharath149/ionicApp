@@ -1,0 +1,8 @@
+{
+  "name": "Srini Rel Network",
+  "integrations": {
+    "capacitor": {},
+    "cordova": {}
+  },
+  "type": "angular"
+}
