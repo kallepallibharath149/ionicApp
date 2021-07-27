@@ -1,0 +1,37 @@
+<div class="profile-comments-container">
+<div class="post-profile-details">
+   <div><img class="profile-image mt-2"  [src]="'../../assets/images/profile.jpg'"/>bharath sataya</div>
+</div>
+<div class="like-comment-count">
+        <div *ngIf="commentsArray.length > 0 || likesArray.length > 0" class="count-section">
+          <div class="like">
+            {{likesArray.length + 'Likes'}}
+          </div>
+          <div (click)="showComments = !showComments" class="comment" *ngIf="commentsArray.length > 0">
+            {{commentsArray.length + 'comments'}}
+          </div>
+        </div>
+</div>
+<div class="comment-section">
+    <div class="item" [ngStyle]="{'color':likeStatus?'rgb(32 120 244)':''}" (click)="updateLikeStatus()"><i
+        class="fa {{likeStatus?'fa-2x':''}} fa-thumbs-up" aria-hidden="true"></i>&nbsp;Like</div>
+    <div class="item comment" (click)="commentFocus()"><i class="fa fa-comment" aria-hidden="true"></i>&nbsp;Comment
+    </div>
+    <div class="item">
+      <div class="d-inline-block" ngbDropdown #myDrop="ngbDropdown">
+        <div id="dropdownManual" ngbDropdownAnchor (click)="myDrop.open()"><i class="fa fa-share"
+            aria-hidden="true"></i>&nbsp;Share</div>
+          <div ngbDropdownMenu aria-labelledby="dropdownManual">
+          <button (click)="sharePost('ccc')" ngbDropdownItem>Share</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<app-comments-container 
+[userDetails]="userDetails"
+[commentsArray]="commentsArray"
+(updateCommentArrayForReply)="updateCommentArrayForReply($event.updatedObj, $event.addedreplyPostObj, $event.index)"
+(updateCommentArray)="updateCommentArray($event.updatedArray,$event.addedPostObj)"
+[focusInput]="focusInput" [showComments]="showComments">
+</app-comments-container>
+</div>

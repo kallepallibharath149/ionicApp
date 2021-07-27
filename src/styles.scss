@@ -1,0 +1,295 @@
+/* You can add global styles to this file, and also import other style files */
+
+@font-face {
+    font-family: 'Roboto-Regular';
+    src: url(assets/css/fonts/Roboto-Regular.ttf) format("opentype");
+  }
+  
+  @font-face {
+    font-family: 'Roboto-Medium';
+    src: url(assets/css/fonts/Roboto-Medium.ttf) format("opentype");
+  } 
+  
+  html,
+  body {
+    height: 100%;
+  }
+  
+  * {
+    font-family: 'Roboto-Regular', sans-serif;
+  }
+  :root{
+       font-family: 'Roboto-Regular', sans-serif; 
+  }
+  
+  html,
+  body {
+    font-family: 'Roboto-Regular', sans-serif !important;
+    color      : #000;
+    font-size: 14px;
+  }
+  
+  
+  body {
+    padding: 0;
+    margin: 0;
+    overflow-x     : hidden;
+    scroll-behavior: smooth;
+    background     : #f0f2f5;
+  }
+  
+  .auto-flex {
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    flex-direction : row;
+    flex-wrap      : wrap;
+  }
+  
+  .text-black{
+    color: #000 !important;
+  }
+  
+  .base-font{
+    font-family: 'Roboto-Regular', sans-serif !important; 
+  }
+  
+  //setting font for primeng components
+  .p-component, .p-component * {
+    font-family: 'Roboto-Regular', sans-serif ; 
+  }
+  
+  .box{
+    background-color: white;
+    // text-align: center;
+    // padding: 1rem;
+    // border-radius: 4px;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+  }
+  
+  // ***********  drgula css start here **********//
+  /* in-flight clone */
+  .gu-mirror {
+    position      : fixed !important;
+    margin        : 0 !important;
+    z-index       : 9999 !important;
+    opacity       : 0.8;
+    -ms-filter    : "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    filter        : alpha(opacity=80);
+    pointer-events: none;
+  }
+  
+  /* high-performance display:none; helper */
+  .gu-hide {
+    left: -9999px !important;
+  }
+  
+  /* added to mirrorContainer (default = body) while dragging */
+  .gu-unselectable {
+    -webkit-user-select: none !important;
+    -moz-user-select   : none !important;
+    -ms-user-select    : none !important;
+    user-select        : none !important;
+  }
+  
+  /* added to the source element while its mirror is dragged */
+  .gu-transit {
+    opacity   : 0.2;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+    filter    : alpha(opacity=20);
+  }
+  
+  // ********* dragula css ends here *************//
+  
+  // ********* groups preview custom css starts here *************//
+  p-autoComplete.friendsAutoComplete {
+    .friends {
+      .ui-autocomplete-dropdown {
+        position: absolute;
+      }
+  
+      .ui-autocomplete-multiple-container.ui-inputtext {
+        overflow: auto !important;
+      }
+    }
+  }
+  
+  // ********* groups preview custom css ends here *************//
+  
+  a {
+    text-decoration: none !important;
+  }
+  
+  
+  .noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+  }
+  
+  // ***********  to hide arrow icon primeng overlay ******//
+  
+  .p-overlaypanel:after,
+  .p-overlaypanel:before {
+    display: none;
+  }
+  
+  // ***********  custom css for corousel for upload posts modal start******//
+  ngb-modal-window.postUpload-preview {
+    .modal-body {
+      ngx-slick-carousel {
+        .slick-list.draggable {
+          max-height : 390px !important;
+          align-items: center;
+  
+          .slick-track {
+            display    : flex;
+            align-items: center;
+          }
+  
+          .slide.slick-slide {
+            .remove-item {
+              display: none;
+            }
+  
+            &.slick-current.slick-active {
+              .remove-item {
+                display      : block;
+                width        : 30px;
+                height       : 30px;
+                background   : #5cffe1;
+                border-radius: 75px;
+                position     : absolute;
+                top          : 0px;
+                right        : 0px;
+                cursor       : pointer;
+  
+                &:hover {
+                  width : 40px;
+                  height: 40px;
+                }
+  
+                i {
+                  color      : white;
+                  font-weight: bolder;
+                  position   : absolute;
+                  top        : 50%;
+                  left       : 50%;
+                  transform  : translate(-50%, -50%);
+                }
+              }
+            }
+          }
+        }
+  
+        .slick-prev:before,
+        .slick-next:before {
+          color: black !important;
+        }
+  
+        .slick-prev,
+        .slick-next {
+          &:hover {
+            &:before {
+              font-size: 30px !important;
+            }
+          }
+        }
+  
+        .slick-dots li button:before {
+          font-size: 12px !important;
+        }
+  
+        .slick-dots li button {
+          &:hover:before {
+            font-size: 16px !important;
+          }
+        }
+  
+        .slick-prev.slick-arrow {
+          z-index: 9 !important;
+        }
+  
+        .slick-next {
+          z-index: 9 !important;
+        }
+  
+        .slick-dots {
+          bottom: -50px;
+        }
+      }
+    }
+  }
+  
+  
+  .new-group-sidebar .p-sidebar-right{
+      overflow:auto !important;
+    }
+  // ***********  custom css for corousel for upload posts modal end******//
+  
+  .b-primary-btn,.b-primary-btn:hover{
+    border: 1px solid #FD416D !important; 
+    background-color: #FD416D !important;
+  }
+  
+  .b-btn-sm{
+    padding: 0 10px !important;
+    font-size: 14px !important;
+  }
+  
+  .b-secondary-btn,.b-secondary-btn:hover{
+  border: 1px solid #FD416D !important;
+  background-color: #FFFFFF !important;
+  color: #FD416D !important;
+  font-weight: 500 !important;
+  }
+  
+  .text-ellipse{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  //tabs oberflow scroll with scrollbar hide
+  .tabscont {
+    width     : 100%;
+    overflow-x: auto;
+    /* Add the ability to scroll */
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .tabscont::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .tabscont {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width   : none;
+    /* Firefox */
+  }
+
+  .check-box {
+    display: none;
+  }
+  
+  .node-image:hover {
+    .check-box {
+        display: block !important;
+    }
+  }
+  
+  .node-custom-img{
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;  
+  }
+
+  .node-name {
+    font-size: 8px;
+}

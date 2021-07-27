@@ -1,0 +1,41 @@
+<div class="reply-container">
+    <div *ngIf="commentReplayItem" class="sub-replay">
+        <div>
+            <div class="flex-alignment">
+                <div class="profile-img" (click)="navigateToProfile()"> <img
+                        [src]="commentReplayItem.profileImageUrl?commentReplayItem.profileImageUrl:''" />
+                </div>
+                <div class="profileName"><b (click)="navigateToProfile()">{{commentReplayItem.profileName}}</b>
+                    <div class="time">{{commentReplayItem.createddatetime | timeAgo}} &nbsp; &nbsp;
+                    </div>
+                </div>
+            </div>
+            <div class="main-comment commented-section">
+                <div *ngIf="commentReplayItem.commenttext"><p class="comment-t">{{commentReplayItem.commenttext}}</p></div>
+                <div *ngIf="commentReplayItem.resources.length > 0" class="comment-img-prev-data">
+                    <ngx-slick-carousel class="carousel courosel-comp" #slickModal="slick-carousel"
+                        [config]="PostSlideConfig">
+                        <div ngxSlickItem *ngFor="let resource of commentReplayItem.resources; let i=index;"
+                            class="slide">
+                            <div class="position-relative" *ngIf="resource.fileType == 'image'">
+                                <img class="courosel-image img-fluid" [src]="resource.url">
+                            </div>
+                            <div class="position-relative" *ngIf="resource.fileType == 'video'">
+                                <video [ngStyle]="{display:resource.fileType == 'video'? 'block':'none'}" #postVideoRef
+                                    id="outputVideo" [src]="resource.url" style="width:100%" controls
+                                    controlsList="nodownload"></video>
+                            </div>
+                            <div class="position-relative" *ngIf="resource.fileType == 'pdf'">
+                                <pdf-viewer [src]="resource.url" [original-size]="false" [autoresize]="true"
+                                    [render-text]="true" [show-borders]="true" [render-text-mode]="1"
+                                    [zoom-scale]="'page-height'"
+                                    style="display: block;  height: 400px; max-width:100%;">
+                                </pdf-viewer>
+                            </div>
+                        </div>
+                    </ngx-slick-carousel>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

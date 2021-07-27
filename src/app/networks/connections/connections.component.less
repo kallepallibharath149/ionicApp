@@ -1,0 +1,216 @@
+
+.connection-con{
+    .btn-group {
+        .btn {
+            color           : #25374C;
+            background-color: #ffffff;
+            border          : 1px solid #FD416D;
+            font-size       : 14px;
+            font-weight     : 600;
+            height          : 30px;
+            width           : 150px;
+            min-width: 150px;
+    
+            &.btn-selected {
+                color           : #ffffff;
+                background-color: #FD416D;
+            }
+        }
+    }
+    .scroll-data{
+     display: inline-flex;
+    }
+}
+
+.connection{
+    width: 200px;
+    height: 200px;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 5px;
+    margin: 10px;
+    .box-item{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .name{
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bolder;
+        }
+        .input-form{
+        text-align: center;
+        margin-top: 10px;
+        }
+        .round-shape{
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+    }
+}
+
+.panel{
+    width: 220px;
+    height: 300px;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 5px;
+    margin: 10px;
+    &.pending{
+        height: 330px; 
+        .box-item{
+            width: 300px;
+        }  
+    }
+    .box-item{
+        width: 220px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .name{
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bolder;
+        }
+        .input-form{
+        text-align: center;
+        margin-top: 10px;
+        }
+        .round-shape{
+            border-radius: 50%;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+    }
+}
+
+.no-p-img{
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(to right, #b92b27, #1565c0);
+}
+
+.member-contentLoad{
+	margin: 10px;
+	width: 125px;
+	height: 199px;
+	overflow: hidden;
+	border-radius: 4px;
+	background-color: #FFFFFF;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+
+  .members-container{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.tabscont {
+    width     : 100%;
+    overflow-x: auto;
+    /* Add the ability to scroll */
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .tabscont::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .tabscont {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width   : none;
+    /* Firefox */
+  }
+
+  .info{
+    font-weight: bold;   
+  }
+
+  .search{
+     width: 300px;
+    .search-box {
+        position: relative;
+    
+        input {
+            padding-right: 48px;
+        }
+    
+        .searh-icon {
+            position: absolute;
+            right   : 10px;
+            top     : 8px;
+        }
+    
+        .fa-search {
+            position: relative;
+            right   : 10px;
+        }
+    
+        .fa {
+            font-size: 16px;
+            color    : #5A6872;
+            cursor   : pointer;
+        }
+    }
+  }
+ 
+
+.devider{
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    .left{
+        width: 200px;
+    }
+    .right{
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+
+.key{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.menuItems{
+    margin: 12px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    .item{
+        padding: 10px;
+        cursor: pointer;
+    }
+}
+
+.action-btn.primary,.action-btn.primary:hover{
+    border: 1px solid #FD416D !important; 
+    background-color: #FD416D !important;
+    margin: 10px 0;
+  }
+
+  @media screen and (max-width: 575px) {
+   .btn-group{
+       width: 100%;
+       display: flex;
+       flex-wrap: wrap;
+       .btn{
+           width: 100% !important;
+       }
+   }
+  }
+
+ 

@@ -1,0 +1,26 @@
+<div class="home-container">
+    <div class="home">
+         <div class="groups-drop-down">
+            <div class="d-inline-block w-100" ngbDropdown #myDrop="ngbDropdown">
+                <button class="btn select mb-3 w-100  mr-2" id="dropdownManual" ngbDropdownToggle>{{currentGroup?currentGroup.name:'My Groups'}}</button>
+                <div infiniteScroll [scrollWindow]="false" alwaysCallback="true"
+                [infiniteScrollDisabled]="false" [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100"
+                (scrolled)="lazyLoad()" class="w-100 groups-container" ngbDropdownMenu aria-labelledby="dropdownManual">
+                <ng-container *ngFor="let group of groupsListDetails">
+                    <button [title]="group.name" (click)="groupSelected(group, myDrop, $event)" class="{{(currentGroup && currentGroup.id == group.id)?'bg-success':''}} group-item text-ellipse" ngbDropdownItem>{{group.name}}</button>
+                </ng-container>
+                <div *ngIf="groupsLoading" class="text-center">
+                    <p-progressSpinner [style]="{width: '40px', height: '40px'}" [strokeWidth]="2"></p-progressSpinner>
+                   </div>
+                </div>
+              </div>
+         </div>
+        <div class="post-uplod">
+            <app-post-upload [currentGroupId]="currentGroup?currentGroup.id: ''"></app-post-upload>
+        </div>
+        
+        <div>
+            <app-user-posts [currentGroupId]="currentGroup?currentGroup.id: ''" [postsArray]="posts"></app-user-posts>
+        </div>
+    </div>
+</div>

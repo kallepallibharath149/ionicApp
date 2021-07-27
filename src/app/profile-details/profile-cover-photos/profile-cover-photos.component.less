@@ -1,0 +1,114 @@
+.profile-container {
+    overflow-x: hidden;
+
+    @media only screen and (max-width: 992px) {
+        .cover-photo {
+            .photo {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.cover-photo {
+    height        : 350px;
+    display       : flex;
+    flex-direction: column;
+    align-items   : center;
+    position      : relative;
+    margin-top    : 10px;
+
+    .photo {
+        height         : 350px;
+        position       : relative;
+        display        : flex;
+        overflow       : hidden;
+        align-items    : center;
+        justify-content: center;
+        width          : 60%;
+        border-radius  : 20px;
+
+        .main-cover {
+            width   : 100%;
+            height  : 350px;
+            position: relative;
+            background: linear-gradient(to right, rgb(185, 43, 39), rgb(21, 101, 192));
+
+            img {
+                width: 100%; 
+                height: 100%;
+                position: absolute;
+                top     : 50%;
+                left    : 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .upload-cover {
+                position        : absolute;
+                right           : 10px;
+                top             : 10px;
+                cursor          : pointer;
+                padding         : 4px;
+                background-color: beige;
+                border-radius   : 20px;
+
+                .wrapper {
+                    visibility: hidden;
+                    width     : 0px;
+                    height    : 0px;
+                    opacity   : 0;
+                }
+            }
+        }
+    }
+
+    .profile {
+        position: absolute;
+        width   : 200px;
+        height  : 200px;
+        bottom  : -36px;
+
+        img {
+            width        : 100%;
+            height       : 100%;
+            border-radius: 100px;
+        }
+
+        .section {
+            width   : inherit;
+            height  : inherit;
+            position: relative;
+            background: linear-gradient(to right, rgb(195, 20, 50), rgb(36, 11, 54));
+            border-radius: 107px;
+
+            .upload-profile-photo {
+                position        : absolute;
+                right           : 18px;
+                bottom          : 34px;
+                padding         : 4px;
+                background-color: beige;
+                border-radius   : 20px;
+                cursor          : pointer;
+
+                .wrapper {
+                    visibility: hidden;
+                    width     : 0px;
+                    height    : 0px;
+                    opacity   : 0;
+                    //position: absolute;
+                }
+            }
+        }
+
+    }
+}
+
+.profile-name-section {
+    display        : flex;
+    width          : 100%;
+    height         : 3px;
+    align-items    : center;
+    justify-content: center;
+    flex-direction : row;
+    margin-top     : 34px;
+}

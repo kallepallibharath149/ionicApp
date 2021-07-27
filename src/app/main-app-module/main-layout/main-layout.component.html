@@ -1,0 +1,10 @@
+<div class="app-parent">
+    <div #topBanner id="topBanner" class="top-sticky">
+        <app-top-banner></app-top-banner>
+      </div>
+      <div #mainDynamicContainer class="" [ngStyle]="{'min-height': 'calc(100vh - ' + (someHeight?someHeight+'px': '171px') + ')'}" class="main-dynamic-container">
+        <router-outlet></router-outlet>
+      </div>
+      <p-scrollTop [style]="{width: '30px', height: '30px'}" [threshold]="400"></p-scrollTop>
+</div>
+<p-confirmDialog [style]="{width: '50vw'}" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text"></p-confirmDialog>

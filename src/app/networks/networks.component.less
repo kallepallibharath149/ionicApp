@@ -1,0 +1,32 @@
+
+.networks-container{
+    .btn-group {
+        width: 100%;
+        .btn {
+            color           : #25374C;
+            background-color: #ffffff;
+            border          : 1px solid #FD416D;
+            // font-family     : Roboto-Medium;
+            font-size       : 14px;
+            font-weight     : 600;
+            height          : 30px;
+            width           : 50%;
+    
+            &.btn-selected {
+                color           : #ffffff;
+                background-color: #FD416D;
+            }
+        }
+    }
+}
+
+
+@media only screen and (max-width: 991px) {
+    .networks-container{
+        .btn-group {
+            .btn {
+                width           : 50%;
+            }
+        }
+    } 
+}

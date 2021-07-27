@@ -1,0 +1,49 @@
+<div class="profile-container">
+    <div class="cover-photo">
+        <div class="photo">
+            <div class="main-cover">
+                <img *ngIf="coverPhotoAvailable" [src]="domSanitizationService.bypassSecurityTrustUrl(coverPhoto)" />
+                <div *ngIf="isMyProfile" (click)="fileCoverImageInput.value =null; coverPhotoUpload()" [title]="'Update cover photo'" class="upload-cover">
+                    <div class="wrapper" >
+                        <input type="file" #fileCoverImageInput  accept="image/*"
+                            (change)="handlePhotoUpload($event,'coverPhoto');" id="cover-photo-upload" />
+                    </div>
+                    <i class="fa fa-2x fa-camera" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        <div class="profile">
+            <div class="section">
+                <img class="rounded-circle" *ngIf="profilePhotoAvailable" [src]="domSanitizationService.bypassSecurityTrustUrl(profilePhoto)" />
+                <div *ngIf="isMyProfile" (click)="fileProfileImageInput.value =null;profilePhotoUpload()" [title]="'Update profile photo'" class="upload-profile-photo">
+                    <div class="wrapper">
+                        <input type="file" #fileProfileImageInput accept="image/*"
+                            (change)="handlePhotoUpload($event,'profilePhoto');" id="profile-photo-upload" />
+                    </div>
+                    <i class="fa fa-2x fa-camera" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="profile-name-section">
+    </div>
+</div>
+
+<!--photo upload confirm modal template-->
+<ng-template #confirmImageTemplate let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Update {{header}}</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <img id="outputImage" class="image-review" style="width:100%" *ngIf="imageSrc" [src]="imageSrc" />
+    </div>
+    <div class="modal-footer footer-align">
+        <div>
+            <button pButton pRipple type="button" label="Update" (click)="updatePhoto()" styleClass="p-button-sm" class="p-button-rounded  b-primary-btn mr-4"></button>
+			<button pButton pRipple (click)="closeModal('')" styleClass="p-button-sm" type="button" label="Cancel" class="p-button-rounded  b-secondary-btn p-button-outlined"></button>
+        </div>
+    </div>
+</ng-template>

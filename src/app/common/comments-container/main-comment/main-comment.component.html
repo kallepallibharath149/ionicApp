@@ -1,0 +1,105 @@
+<div class="main-comment-sec">
+    <div class="comments-display">
+        <div>
+            <div class="flex-alignment">
+                <div class="profile-img" (click)="navigateToProfile()"> <img
+                        [src]="mainCommentObj.profileImageUrl?mainCommentObj.profileImageUrl:''" />
+                </div>
+                <div class="profileName"><b (click)="navigateToProfile()">{{mainCommentObj.profileName}}</b>
+                <div class="time">{{mainCommentObj.createddatetime | timeAgo}} &nbsp;&nbsp;
+                <span class="reply" (click)="replyToComment()">Reply</span><span *ngIf="!noReplies" (click)="showHideReply()">&nbsp; &nbsp; {{showReplies?'Hide replies':'Show replies'}}</span>
+                </div>
+                </div>
+            </div>
+            <div class="commented-section">
+                <div class="main-comment">
+                    <div *ngIf="mainCommentObj.commenttext"><p class="mb-0 comment-t">{{mainCommentObj.commenttext}}</p></div>
+                    <div *ngIf="mainCommentObj.resources.length > 0" class="comment-img-prev-data">
+                        <ngx-slick-carousel class="carousel courosel-comp" #slickModal="slick-carousel" [config]="PostSlideConfig">
+                            <div ngxSlickItem *ngFor="let resource of mainCommentObj.resources; let i=index;" class="slide">
+                              <div  class="position-relative" *ngIf="resource.fileType == 'image'">
+                                <img class="courosel-image img-fluid" [src]="resource.url">
+                              </div>
+                              <div class="position-relative" *ngIf="resource.fileType == 'video'">
+                                <video [ngStyle]="{display:resource.fileType == 'video'? 'block':'none'}" #postVideoRef id="outputVideo"
+                                  [src]="resource.url" style="width:100%" controls controlsList="nodownload"></video>
+                              </div>
+                              <div class="position-relative" *ngIf="resource.fileType == 'pdf'">
+                                <pdf-viewer [src]="resource.url" [original-size]="false" [autoresize]="true" [render-text]="true"
+                                  [show-borders]="true" [render-text-mode]="1" [zoom-scale]="'page-height'"
+                                  style="display: block;  height: 400px; max-width:100%;">
+                                </pdf-viewer>
+                              </div>
+                            </div>
+                          </ngx-slick-carousel>
+                    </div>
+                </div>
+                <!-- <div class="d-flex">
+                    <div *ngIf="!noReplies" class="show-reply" (click)="showHideReply()" >{{showReplies?'Hide replies':'Show replies'}}</div>
+                </div> -->
+                 <div class="reply-comments" [class.hideReply]="!showReplies" *ngIf="commentsReplyArray.length > 0">
+                     <ng-container *ngFor="let commentReplayItem of commentsReplyArray; let replyIndex=index; ">
+                         <app-reply-comment (replyToMainComment)="replyToComment()" [commentReplayItem]="commentReplayItem"></app-reply-comment>
+                     </ng-container>
+                     <div *ngIf="showLoadMore">
+                        <div class="d-flex mt-2 mb-3">
+                           <div (click)="loadMoreCommentsReplies()" class="show-reply">Load replies</div>
+                        </div>
+                    </div>
+                 </div>
+                 <div class="d-flex justify-content-center">
+                    <p-progressSpinner [style]="{width: '50px', height: '50px'}" [strokeWidth]="2" [animationDuration]="2" *ngIf="showSpinner"></p-progressSpinner>
+                </div>
+                 <div  [class.hideReply]="(!(commentIndex == currentReplyIndex) || !showReplies)" class="reply-container">
+                    <div class="post">
+                        <form #replyCommentsForm autocomplete="off">
+                            <div class="flex-content">
+                                <div class="profile">
+                                    <div (click)="navigateToProfile()"> <img [src]="loggedInUserDetails.profileImageUrl?loggedInUserDetails.profileImageUrl:''" /></div>
+                                </div>
+                
+                                <div class="comment-input">
+                                    <input #replyCommentInput class="w-100" name="replyComment" [(ngModel)]="replayComment"
+                                        placeholder="write a reply..." id="float-input" type="text" size="30" pInputText>
+                                    <div class="photo"><i (click)="replyCommentImageInput.value = null; replyCommentPhotoUpload()" 
+                                            class="fa fa-2x fa-camera camera-i" aria-hidden="true"></i>
+                                            <i class="pi pi-send send-i" (click)="newReplyCommentHandler(replyCommentsForm)"></i></div>
+                                    <div class="wrapper">
+                                        <input type="file" name="commentimage" multiple #replyCommentImageInput accept="image/*"
+                                            (change)="handleFiles($event);" />
+                                            <button type="submit" (click)="newReplyCommentHandler(replyCommentsForm)" >Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div *ngIf="selectedImageVideoFilesObjectURLs.length > 0" class="comment-img-prev">
+                        <ngx-slick-carousel class="carousel w-100 courosel-comp" #slickModal="slick-carousel" [config]="PostSlideConfig">
+                            <div ngxSlickItem *ngFor="let resource of selectedImageVideoFilesObjectURLs; let i=index;" class="slide">
+                              <div  class="position-relative text-center" *ngIf="resource.fileType == 'image'">
+                                <img class="courosel-image img-fluid" [src]="resource.url">
+                                <div title="Remove item" (click)="removeSelectedUploadPost(i,resource)" class="remove-item"><i
+                                    class="pi pi-times"></i></div>
+                              </div>
+                              <div class="position-relative text-center" *ngIf="resource.fileType == 'video'">
+                                <video [ngStyle]="{display:resource.fileType == 'video'? 'block':'none'}" #postVideoRef id="outputVideo"
+                                  [src]="resource.url" style="width:100%" controls controlsList="nodownload"></video>
+                                <div title="Remove item" (click)="removeSelectedUploadPost(i,resource)" class="remove-item"><i
+                                    class="pi pi-times"></i></div>
+                              </div>
+                              <div class="position-relative text-center" *ngIf="resource.fileType == 'pdf'">
+                                <pdf-viewer [src]="resource.url" [original-size]="false" [autoresize]="true" [render-text]="true"
+                                  [show-borders]="true" [render-text-mode]="1" [zoom-scale]="'page-height'"
+                                  style="display: block;  height: 400px; max-width:100%;">
+                                </pdf-viewer>
+                                <div title="Remove item" (click)="removeSelectedUploadPost(i,resource)" class="remove-item"><i
+                                    class="pi pi-times"></i></div>
+                              </div>
+                            </div>
+                          </ngx-slick-carousel>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

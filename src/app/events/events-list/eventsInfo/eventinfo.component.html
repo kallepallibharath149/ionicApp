@@ -1,0 +1,130 @@
+<div class="section-data">
+    <div class="info-container">
+        <div class="row flex-nowrap ml-0 mr-0">
+            <div class="col-sm-12 tabscont d-flex flex-nowrap">
+                <div (click)="tabClick(i,tab.label )" class="info-labels {{activeTabIndex == i? 'active':''}}"
+                    *ngFor="let tab of infoTabs; let i =index;">
+                    <div class="label">{{tab.label}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-body group-data" #eventScroll infiniteScroll [scrollWindow]="false" alwaysCallback="true"
+        [infiniteScrollDisabled]="showSkeliton" [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100"
+        (scrolled)="lazyLoad()">
+        <ng-container >
+            <form #search="ngForm" autocomplete="off" (submit)="filterBySearch(searchTerm)">
+            <div class="search-row">
+                    <div class="mt-2 mr-2">
+                        <div class="search-box">
+                            <input class="form-control w-100" name="memberSearch" [(ngModel)]="searchTerm" type="text"
+                                placeholder="Search..">
+                            <div class="icons">
+                                <i (click)="filterBySearch(searchTerm)" class="fa fa-search search"></i>
+                                <i *ngIf="searchTerm" (click)="clearSearch(searchTerm)"
+                                    class="fa clear-search pi pi-times"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="_event.groupType =='personal' && _event.createdByMe" class="invite-button mt-2">
+                        <button pButton pRipple type="button" (click)="inviteToEvent()" label="Invite to Event"
+                            class="p-button-rounded pl-4 pr-4  pt-2 pb-2 p-button-danger"></button>
+                    </div>
+            </div>
+            </form>
+            <div class="members-container">
+                <div class="members-card" [ngClass]="{'last-member':last, 'first-member':first}"
+                    *ngFor="let member of membersArrayData; let memberIndex=index; let first=first; let last= last ;">
+                    <div class="image">
+                        <img *ngIf="member.invteeprofileimageurl" [src]="filesBaseURL+member.invteeprofileimageurl" />
+                        <img *ngIf="!member.invteeprofileimageurl" [src]="'assets/images/profilepic.jpg'" />
+                    </div>
+                    <div class="details">
+                        <div class="d-flex flex-row align-items-center">
+                            <div [title]="member.profileName" class="name">{{member.invteeprofilename}}</div>
+                            <div *ngIf="((_event.memberType =='Host' || _event.memberType =='Cohost' || _event.createdByMe))" class="icon position-relative" #mydiv (click)="memberOptions.toggle($event)">
+                                <i class="pi pi-ellipsis-v"></i>
+                                <p-overlayPanel class="group_member_option" styleClass="group_member_option"
+                                    baseZIndex="3000" #memberOptions [showTransitionOptions]="'150ms'"
+                                    [hideTransitionOptions]="'100ms'" [dismissable]="true"
+                                    [style]="{minWidth: '170px', maxWidth: '200px', minHeight: '125x'}">
+                                    <ng-template pTemplate>
+                                        <div style="position: relative;">
+                                            <div class="menu-options d-flex flex-column">
+                                                <ng-container *ngFor="let action of memberActionItems; let i=index;">
+                                                    <ng-container *ngIf="member.memberType =='Invitee' ">
+                                                        <ng-container *ngIf="(action.label =='Remove from Event' || action.label =='Add as Co-Host')">
+                                                            <div class="item" (click)="groupMembersActions(action.label, member, memberIndex)">
+                                                                {{action.label}}
+                                                            </div>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="member.memberType =='Cohost'">
+                                                        <ng-container *ngIf="(action.label =='Remove from Event' || action.label =='Remove Co-Host')">
+                                                            <div class="item" (click)="groupMembersActions(action.label, member, memberIndex)">
+                                                                {{action.label}}
+                                                            </div>
+                                                        </ng-container>
+                                                    </ng-container>
+
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-overlayPanel>
+                            </div>
+                        </div>
+                        <div class="type" [title]="member.memberType">{{member.memberType}}</div>
+                    </div>
+                </div>
+                <ng-container *ngIf="showSkeliton">
+                    <ng-container *ngFor="let item of loadingItems">
+                        <div class="member-contentLoad">
+                            <div class="p-d-flex p-mb-3 justify-content-center">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                            </div>
+                            <div class="w-100 p-2">
+                                <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton height=".5rem" width="8rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="((activeTabName == 'Invited Members' && noEventMembers) || (activeTabName == 'Accepted' && noacceptedInvitations) || (activeTabName == 'Rejected' && norejectedInvitations) || (activeTabName == 'Tentative' && notentativeInvitations)) && !showSkeliton">
+                    <div class="col-lg-9 col-md-12 p-10 no-groups jumbotron">
+                        <div class="container text-center">
+                            <ng-container *ngIf="(activeTabName == 'Invited Members' && noEventMembers && !showSkeliton)">
+                                <h4 class="info">{{'No Event Members'}}</h4>
+                                <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                            </ng-container>
+                            <ng-container *ngIf="(activeTabName == 'Accepted' && noacceptedInvitations && !showSkeliton)">
+                                <h4 class="info">{{'No Accepted Members'}}</h4>
+                                <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                            </ng-container>
+                            <ng-container *ngIf="(activeTabName == 'Rejected' && norejectedInvitations && !showSkeliton)">
+                                <h4 class="info">{{'No Rejected Members'}}</h4>
+                                <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                            </ng-container>
+                            <ng-container *ngIf="(activeTabName == 'Tentative' && notentativeInvitations && !showSkeliton)">
+                                <h4 class="info">{{'No Tentative Members'}}</h4>
+                                <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+        <p-scrollTop [style]="{width: '30px', height: '30px'}" target="parent"></p-scrollTop>
+    </div>
+    <div class="modal-footer">
+        <ng-container>
+            <button pButton pRipple (click)="modalRef.dismiss('Cross click')" type="button" label="Close"
+                class="p-button-rounded b-primary-btn"></button>
+        </ng-container>
+    </div>
+</div>
+
+<p-confirmDialog class="confirm-del" [style]="{width: '50vw'}" [baseZIndex]="10000"
+    acceptButtonStyleClass="p-button-rounded b-btn-sm b-primary-btn"
+    rejectButtonStyleClass="p-button-rounded b-btn-sm b-secondary-btn"></p-confirmDialog>

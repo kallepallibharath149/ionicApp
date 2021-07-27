@@ -1,0 +1,18 @@
+<div class="left-cont" style="height:800px">
+
+  <div class="card mt-4">
+    <div class="menu">
+      <div class="menu-item p-2">
+        <div class="text">My Groups</div>
+        <!-- <div class="icon l-caret"><i class="pi pi-ellipsis-v"></i></div> -->
+      </div>
+    </div>
+    <div class="d-flex flex-column">
+      <div class="p-2 group-item {{(selectedGroup && selectedGroup.id == group.id )?'active':''}}" (click)="navigateGroup(group, i)"
+        *ngFor="let group of groupsListDetails;let i=index;">
+        <div>{{group.name}}{{group.defaultGroup?'(default)':''}}</div>
+      </div>
+    </div>
+  </div>
+
+</div>

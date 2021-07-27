@@ -1,0 +1,10 @@
+<div class="app-top-parent">
+  <div *ngIf="environMent" class="row env m-0 d-flex justify-content-center"><div>{{environMent?environMent: ''}}</div></div>
+  <div class="main-dynamic-container">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="bg-image"></div>
+</div>
+<p-toast class="root-p-tost"  [preventOpenDuplicates]="true" [showTransformOptions]="'translateX(100%)'" [autoZIndex]="true" [baseZIndex]="100000" [style]="{marginTop: '0px','opacity': '1'}" (onClose)="closeToastMessage($event.message)">
+
+</p-toast>

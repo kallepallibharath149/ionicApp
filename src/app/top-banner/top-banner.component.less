@@ -1,0 +1,210 @@
+:host::ng-deep {}
+
+.top-bannercontainer {
+    min-height      : 30px;
+    // background : #3b5998;
+    background-color: #29303E;
+    width           : 100%;
+    display         : in;
+    align-items     : center;
+    color           : black;
+    box-shadow      : 0px 10px 12px #888888;
+
+    .top-items {
+        width          : 100%;
+        display        : flex;
+        align-items    : center;
+        flex-direction : row;
+        justify-content: space-between;
+        flex-wrap      : wrap;
+
+        .item {
+            flex-grow: 1;
+
+            &.brand {
+                color         : #0ECAA6;
+                font-weight   : bold;
+                letter-spacing: -2px;
+
+                h3 {
+                    width       : max-content;
+                    cursor      : pointer;
+                    font-size   : 32px;
+                    padding-left: 8px;
+                }
+            }
+        }
+    }
+
+
+    @media only screen and (max-width: 576px) {
+        #search {
+          display: none;
+        }
+    }
+     
+}
+
+@media only screen and (max-width: 768px) {
+    .nav-items{
+        min-width: 100% !important;
+    }
+}
+
+#search-res{
+    width: 90%;
+}
+
+.back{
+    cursor: pointer;
+    .pi-arrow-left{
+        font-size: 20px;
+    }  
+}
+
+#search, #search-res {
+    .pi-spinner, .pi-times {
+        right    : 15px;
+        top      : 11px;
+        font-size: 20px;
+        color    : white;
+        cursor: pointer;
+    }
+}
+.global-search {
+    border-radius: 79px;
+    width        : 100%;
+    background   : #486A92;
+    border       : none !important;
+    color        : white;
+    height       : 28px;
+    font-family  : 'Roboto-Regular', sans-serif;
+     
+    & {
+        &::placeholder {
+            /* Chrome, Firefox, Opera, Safari 10.1+ */
+            color  : white;
+            opacity: 1;
+            /* Firefox */
+        }
+
+        &:-ms-input-placeholder {
+            /* Internet Explorer 10-11 */
+            color: white;
+        }
+
+        &::-ms-input-placeholder {
+            /* Microsoft Edge */
+            color: white;
+        }
+    }
+}
+.global-search-results{
+    display: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    .section{
+        .header{
+            width: 100%;
+            min-height: 40px;
+            background-color: #cabfc2;
+            color: white;
+            font-size: 16px;
+            font-weight: bolder;
+            padding: 4px 10px;
+
+        }
+        .item{
+            padding: 5px 10px;
+            min-height: 40px;
+            &:hover{
+                background-color: #FD416D;
+                color: white;
+            }
+        }
+    }
+
+    .profile-image{
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        background: linear-gradient(to right, #b92b27, #1565c0)
+    }
+}
+#search:hover .global-search-results,#search-res:hover .global-search-results{
+    display: block;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    border-radius: 3px;
+    top: auto;
+    background-color: white;
+    min-height: 0px;
+    max-height: 300px;
+
+}
+.search-focused .global-search-results{
+    display: block;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    border-radius: 3px;
+    top: auto;
+    background-color: white;
+    min-height: 0px;
+    max-height: 300px;
+
+}
+
+.navs {
+    height      : 40px;
+    width           : 100%;
+    background-color: #F3FCFA;
+    border-bottom: 1px solid #00AB87;
+}
+.nav-items{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-around;
+    min-width: 50%;
+    flex-wrap: nowrap; 
+
+    .item{
+        padding: 10px;
+        color: black;
+        font-weight: bold;
+        cursor: pointer;
+        word-break: keep-all;
+        white-space: nowrap;
+        &.active{
+        color: #FD416D;
+        border-bottom: 2px solid #FD416D;
+        }
+    }
+}
+
+.nav-items{
+    overflow-x: auto; /* Add the ability to scroll */
+}
+/* Hide scrollbar for Chrome, Safari and Opera */
+.nav-items::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.nav-items {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+.search-screen{
+    position: fixed;
+    background-color: white;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+}

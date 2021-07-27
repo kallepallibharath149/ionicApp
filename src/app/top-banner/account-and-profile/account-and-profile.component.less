@@ -1,0 +1,198 @@
+:host::ng-deep {
+  p-overlayPanel.align_position {
+    .p-overlaypanel.p-component {
+      left: auto !important;
+      top : auto !important;
+      &.notification-panel{  
+      }
+    }
+  }
+  @media only screen and (max-width: 350px) {
+    p-overlayPanel.align_position {
+      .p-overlaypanel.p-component {
+        &.notification-panel {
+          max-width: 250px !important;
+          min-width: 250px !important;
+        }
+      }
+    }
+  }
+  }
+
+.profile-section {
+  .menu-items {
+    display        : flex;
+    flex-direction : row;
+    align-items    : center;
+    flex-wrap      : wrap;
+    justify-content: flex-end;
+
+    .item {
+      margin-right: 10px;
+      cursor      : pointer;
+
+      .item-align {
+        position: relative;
+        &.hamburger{
+          color: white;
+          font-size: 10px;
+        }
+      }
+    }
+  }
+}
+
+.hamburger {
+  display: none;
+}
+
+@media only screen and (max-width: 576px) {
+  .hamburger {
+    display: block;
+  }
+}
+.profile{
+  width:29px;
+  height: 29px;
+  border-radius: 20px;
+  box-shadow: #ffff 0px 0px 0px 1px;
+  &.name{
+    background-color: white;
+    position: relative;
+   .text{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bolder;
+    font-size: 20px;
+   }
+  }
+}
+
+.profile-name{
+  position: relative;
+  top: -5px;
+  .text{
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid #ccc2c2;
+    font-weight: bolder;
+    cursor: pointer;
+  }
+  .options{
+    cursor: pointer;
+  }
+}
+
+.prof-container{
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+:host::ng-deep {
+  p-dialog {
+
+    @media screen and (max-width: 600px) {
+      .updatePassDialog {
+        width: 300px !important;
+      }
+    }
+  }
+  p-overlayPanel{
+  .accounts-panel{
+   .p-overlaypanel-content{
+     width: 100%;
+     height: 100%;
+     padding: 0px !important;
+   } 
+  }
+  }
+
+  p-overlayPanel{
+    .notification-panel{
+     .p-overlaypanel-content{
+       width: 100%;
+       height: 100%;
+       padding: 0px !important;
+     } 
+    }
+    }
+}
+
+.action-btn.primary,.action-btn.primary:hover{
+  border: 1px solid #FD416D !important; 
+  background-color: #FD416D !important;
+}
+
+.action-btn.secondary,.action-btn.secondary:hover{
+border: 1px solid #FD416D !important;
+background-color: #FFFFFF !important;
+color: #FD416D !important;
+font-weight: 500 !important;
+}
+
+.notification-item{
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #E3EAF1;
+  cursor: pointer;
+  padding: 10px 5px;
+  font-weight: 600;
+  &.visited{
+    background-color: #b4b4b48c !important;
+  }
+
+  &:hover{
+    background-color: #c4c2c2;
+  }
+  .notification-icon{
+    i{
+      font-size: 30px;
+      padding: 0px 10px 0 5px;
+    }
+    i.fa-users{
+      color: #abde13;
+    }
+    i.fa-calendar{
+      color: #9c2196;
+    }
+    i.fa-address-card{
+      color: #da1414;
+    }
+    i.fa-bell{
+      color: #1a9e67;
+    }
+  }
+}
+
+.notification-seen{
+  font-size: 12px;
+  position: absolute;
+  left: 10px;
+}
+
+.not-header{
+    background-color:#FD416D;
+    height: 32px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    i.fa-refresh{
+      font-size: 22px;
+      cursor: pointer;
+    }
+}
+
+.infinite-scroll{
+  max-height: 300px;
+  min-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

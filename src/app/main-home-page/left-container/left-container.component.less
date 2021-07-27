@@ -1,0 +1,52 @@
+.left-cont {
+    padding: 20px 10px 20px 20px;
+    width  : 260px;
+}
+
+.card {
+    .menu {
+        display       : flex;
+        align-items   : center;
+        flex-direction: column;
+
+        .menu-item {
+            height         : 40px;
+            width          : 100%;
+            display        : flex;
+            justify-content: space-between;
+            align-items    : center;
+            border-top     : 1px solid #E3EAF1;
+
+            .icon {
+                padding: 5px;
+
+                &.l-caret {
+                    flex           : 1;
+                    display        : flex;
+                    justify-content: flex-end;
+                }
+            }
+
+            .text {
+                color      : #D83B3E;
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+.group-item {
+    height       : 40px;
+    display      : flex;
+    align-items  : center;
+    border-bottom: 1px solid #E3EAF1;
+    cursor: pointer;
+    &:hover{
+        background-color: #c4c2c2;
+    }
+    &.active{
+        color: white;
+        background-color:#FD416D;
+        border-bottom: 1px solid #FD416D;
+    }
+}

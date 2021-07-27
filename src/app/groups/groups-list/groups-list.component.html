@@ -1,0 +1,377 @@
+<div class="groups-main">
+	<!-- title section -->
+	<div class="row m-0">
+		<div class="title p-26"> Groups</div>
+	</div>
+
+
+	<!-- buttons section -->
+	<div class="row p-26 buttons-section">
+		<div class="col-lg-9 p-0">
+			<div class="btn-group">
+                <ng-container *ngFor="let tab of Tabs; let i =index;">
+				<button type="button" (click)="changeTab(tab.tabRef, i)" class="btn {{selectedTabIndex ==i ?'btn-selected':''}}">{{tab.tabName}}</button>
+			    </ng-container>
+            </div>
+		</div>
+
+		<div class="col-lg-3 p-0">
+            <form #searchForm="ngForm" ngForm  (submit)="filterBySearch(selectedTab,searchTerm)">
+			<div class="search-box">
+				<input class="form-control w-100" name="searchTerm" (input)="groupsSearch(searchTerm)" [(ngModel)]="searchTerm" id="search-i" type="text" placeholder="Search..">
+               <div class="searh-icon">
+                <i class="fa fa-search" (click)="filterBySearch(selectedTab,searchTerm)"></i>
+                <i *ngIf="searchTerm" (click)="clearSearch(selectedTab, searchTerm)" class="fa clear-search pi pi-times"></i>
+               </div>
+            </div>
+        </form>
+		</div>
+	</div>
+
+    <!-- group cards sections -->
+    <ng-container  *ngIf="selectedTab == 'all'">
+        <div infiniteScroll [infiniteScrollDistance]="0.1" alwaysCallback="true" [infiniteScrollDisabled]="showLoading"  [infiniteScrollThrottle]="100" (scrolled)="lazyLoadAllGroups()" class="row m-0 cards-section">
+            <div class="create p-10">
+                <div class="group-card new-group">
+                    <div class="inner-wrapper-new">
+                        <button type="button" class="btn btn-new-group" (click)="showCreateGroupSideBar = true"><i
+                                class="fa fa-plus"></i></button>
+                        <div class="sec-header">Create Group</div>
+                        <div class="sec-desc">Sed eget pulvinar nulla. Nullam sed leo at diam consectetur placerat. Sed eget
+                            sollicitudin tortor. Nullam sed leo at diam consectetur placerat. </div>
+                    </div>
+                </div>
+            </div>
+            <ng-container *ngFor="let group of groupList; let first=first;">
+                <div class="p-10 groups-box {{first?'first-allGroup':''}}" (click)="navigateToGroupPreview(group)">
+                    <div class="group-card">
+                        <div class="group-card-inner">
+                            <div class="fav-btn-section">
+                                <button type="button" class="btn"><i class="pi pi-star"></i></button>
+                                <!-- <button type="button" class="btn"><i class="pi pi-star-o"></i></button> -->
+                                <button type="button" class="btn float-right"><i class="pi pi-ellipsis-v"></i></button>
+                            </div>
+                            <div class="group-image">
+                                <img *ngIf="group.groupImageUrl" src="{{filesBaseURL+group.groupImageUrl}}">
+                                <div *ngIf="!group.groupImageUrl" class="no-image"></div>
+                            </div>
+                            <div class="sec-header">{{group.groupName}} </div>
+                            <div class="sec-desc">{{group.groupDescription}} </div>
+                            <!-- admin -->
+                            <div class="members-data">
+                                <span>Admins :</span>
+                                <ul>
+                                    <ng-container *ngFor="let admin of group.admins; let i=index;">
+                                        <li *ngIf="admin.profileImageUrl"><img [pTooltip]="admin.profileName" tooltipPosition="left" src="{{filesBaseURL+admin.profileImageUrl}}"></li>
+                                        <li *ngIf="!admin.profileImageUrl"><img [pTooltip]="admin.profileName" tooltipPosition="left" src="assets/images/profilepic.jpg"></li>
+                                    </ng-container>
+                                    <li *ngIf="group.totalAdminsCount > 4"><label class="count">{{group.totalAdminsCount-4}}</label></li>
+                                </ul>
+                            </div>
+    
+                            <!-- members -->
+                            <div class="members-data">
+                                <span>Members :</span>
+                                <ul>
+                                    <ng-container *ngFor="let member of group.members; let i=index;">
+                                        <li *ngIf="member.profileImageUrl"><img [pTooltip]="member.profileName" tooltipPosition="left" src="{{filesBaseURL+member.profileImageUrl}}"></li>
+                                        <li *ngIf="!member.profileImageUrl"><img [pTooltip]="member.profileName" tooltipPosition="left" src="assets/images/profilepic.jpg"></li>
+                                    </ng-container>
+                                    <li *ngIf="group.totalMembersCount > 5"><label class="count">{{group.totalMembersCount-5}}</label></li>
+                                </ul>
+                            </div>
+    
+                            <!-- public -->
+                            <div class="members-data">
+                                <span class="mt-0">Public :</span>
+                                <p-inputSwitch [readonly]="true"
+                                    [style]="{'width':'2.9rem','height':'1.6rem','margin-left': '5px'}"
+                                    [(ngModel)]="group.groupCategory"></p-inputSwitch>
+                            </div>
+    
+                            <div class="members-data">
+                                <span class="mt-0">Default Group: </span>
+                                <label class="default-group">{{group.defaultGroup}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="showLoading">
+                <ng-container *ngFor="let item of contentLoadItems">
+                    <div class="col-lg-3 col-md-6 p-10 loading">
+                        <div class="custom-skeleton p-p-4">
+                            <div class="p-d-flex p-mb-3">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                                <div>
+                                    <p-skeleton width="10rem" styleClass="p-mb-2"></p-skeleton>
+                                    <p-skeleton width="5rem" styleClass="p-mb-2"></p-skeleton>
+                                    <p-skeleton height=".5rem"></p-skeleton>
+                                </div>
+                            </div>
+                            <p-skeleton width="100%" height="150px"></p-skeleton>
+                            <div class="p-d-flex p-jc-between p-mt-3">
+                                <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                                <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="noAllGroups">
+                <div class="p-10 no-groups jumbotron">
+                    <div class="container">
+                        <h4 class="info">No groups found</h4>
+                        <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                    </div>
+                </div>
+            </ng-container>
+    
+    
+        </div> 
+    </ng-container>
+    <ng-container  *ngIf="selectedTab == 'createdbyme'">
+        <div infiniteScroll [infiniteScrollDistance]="0.1" alwaysCallback="true"  [infiniteScrollDisabled]="showLoading" [infiniteScrollThrottle]="100" (scrolled)="lazyLoadCreatedByMe()" class="row m-0 cards-section">
+            <div class="p-10">
+                <div class="group-card new-group">
+                    <div class="inner-wrapper-new">
+                        <button type="button" class="btn btn-new-group" (click)="showCreateGroupSideBar = true"><i
+                                class="fa fa-plus"></i></button>
+                        <div class="sec-header">Create Group</div>
+                        <div class="sec-desc">Sed eget pulvinar nulla. Nullam sed leo at diam consectetur placerat. Sed eget
+                            sollicitudin tortor. Nullam sed leo at diam consectetur placerat. </div>
+                    </div>
+                </div>
+            </div>
+            <ng-container *ngFor="let group of createdBymegroupList">
+                <div class="p-10 groups-box" (click)="navigateToGroupPreview(group)">
+                    <div class="group-card">
+                        <div class="group-card-inner">
+                            <div class="fav-btn-section">
+                                <button type="button" class="btn"><i class="pi pi-star"></i></button>
+                                <!-- <button type="button" class="btn"><i class="pi pi-star-o"></i></button> -->
+                                <button type="button" class="btn float-right"><i class="pi pi-ellipsis-v"></i></button>
+                            </div>
+                            <div class="group-image">
+                                <img *ngIf="group.groupImageUrl" src="{{filesBaseURL+group.groupImageUrl}}">
+                                <div *ngIf="!group.groupImageUrl" class="no-image"></div>
+                            </div>
+                            <div class="sec-header">{{group.groupName}} </div>
+                            <div class="sec-desc">{{group.groupDescription}} </div>
+                            <!-- admin -->
+                            <div class="members-data">
+                                <span>Admins :</span>
+                                <ul>
+                                    <ng-container *ngFor="let admin of group.admins; let i=index;">
+                                        <li *ngIf="admin.profileImageUrl"><img [pTooltip]="admin.profileName" tooltipPosition="left" src="{{filesBaseURL+admin.profileImageUrl}}"></li>
+                                        <li *ngIf="!admin.profileImageUrl"><img [pTooltip]="admin.profileName" tooltipPosition="left" src="assets/images/profilepic.jpg"></li>
+                                    </ng-container>
+                                    <li *ngIf="group.totalAdminsCount > 4"><label class="count">{{group.totalAdminsCount-4}}</label></li>
+                                </ul>
+                            </div>
+    
+                            <!-- members -->
+                            <div class="members-data">
+                                <span>Members :</span>
+                                <ul>
+                                    <ng-container *ngFor="let member of group.members; let i=index;">
+                                        <li *ngIf="member.profileImageUrl"><img [pTooltip]="member.profileName" tooltipPosition="left" src="{{filesBaseURL+member.profileImageUrl}}"></li>
+                                        <li *ngIf="!member.profileImageUrl"><img [pTooltip]="member.profileName" tooltipPosition="left" src="assets/images/profilepic.jpg"></li>
+                                    </ng-container>
+                                    <li *ngIf="group.totalMembersCount > 5"><label class="count">{{group.totalMembersCount-5}}</label></li>
+                                </ul>
+                            </div>
+    
+                            <!-- public -->
+                            <div class="members-data">
+                                <span class="mt-0">Public :</span>
+                                <p-inputSwitch [readonly]="true"
+                                    [style]="{'width':'2.9rem','height':'1.6rem','margin-left': '5px'}"
+                                    [(ngModel)]="group.groupCategory"></p-inputSwitch>
+                            </div>
+    
+                            <div class="members-data">
+                                <span class="mt-0">Default Group: </span>
+                                <label class="default-group">{{group.defaultGroup}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="showLoading">
+                <ng-container *ngFor="let item of contentLoadItems">
+                    <div class="col-lg-3 col-md-6 p-10 loading">
+                        <div class="custom-skeleton p-p-4">
+                            <div class="p-d-flex p-mb-3">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                                <div>
+                                    <p-skeleton width="10rem" styleClass="p-mb-2"></p-skeleton>
+                                    <p-skeleton width="5rem" styleClass="p-mb-2"></p-skeleton>
+                                    <p-skeleton height=".5rem"></p-skeleton>
+                                </div>
+                            </div>
+                            <p-skeleton width="100%" height="150px"></p-skeleton>
+                            <div class="p-d-flex p-jc-between p-mt-3">
+                                <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                                <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="noSearchGroups">
+                <div class="p-10 no-groups jumbotron">
+                    <div class="container">
+                        <h4 class="info">No groups found</h4>
+                        <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                    </div>
+                </div>
+            </ng-container>
+        </div> 
+    </ng-container>
+	<ng-container *ngIf="selectedTab == 'invitations'">
+        <div infiniteScroll [infiniteScrollDistance]="0.1" [infiniteScrollDisabled]="showLoading"  [infiniteScrollThrottle]="100" (scrolled)="lazyLoadInvitations()" class="row m-0 cards-section">
+           <ng-container *ngFor="let invitation of groupInvitaionList">
+            <div class="p-10 groups-box">
+                <div class="group-card invitations">
+                    <div class="group-card-inner mt-4">
+                        <div class="group-image">
+                            <img *ngIf="invitation.groupImageUrl" src="{{filesBaseURL+invitation.groupImageUrl}}">
+                            <div *ngIf="!invitation.groupImageUrl" class="no-image"></div>
+                        </div>
+                        <div class="sec-header">{{invitation.name?invitation.name:''}} </div>
+                        <div class="members-data">
+                            <span>Invited By :</span>
+                            <span class="mr-2">
+                            <img width="30" height="30" *ngIf="invitation.invitedbyProfileImageUrl" src="{{filesBaseURL+invitation.invitedbyProfileImageUrl}}">
+                            <img width="30" height="30" *ngIf="!invitation.invitedbyProfileImageUrl" src="/assets/images/profilepic.jpg">
+                               {{invitation.invitedByProfileName}}
+                            </span>
+                        </div>
+                        <div class="members-data">
+                            <span class="mr-2 invite-text">Invited Text :</span>
+                            <span>
+                            {{invitation.invitetext}}
+                            </span>
+                        </div>
+                        <div class="members-data">
+                            <span class="mr-2">Status :</span>
+                            <span>
+                            {{invitation.status}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-3 mb-3">
+                        <div *ngIf="!invitation.accepted " class="">
+                            <button pButton pRipple type="button" (click)="acceptMyGroupInvitation(invitation)" label="Confirm" class="p-button-rounded pl-4 pr-4 action-btn primary pt-2 pb-2  mr-4 p-button-danger"></button>
+                            <button pButton pRipple type="button" (click)="rejectMyGroupInvitation(invitation)" label="Reject" class="p-button-rounded p-button-outlined action-btn secondary pl-4 pr-4  pt-2 pb-2 p-button-danger"></button>
+                        </div>
+                        <div class="d-flex justify-content-center" *ngIf="(invitation.accepted && invitation.accepted =='accepted')">
+                            <button pButton pRipple type="button" label="Accepted" class="p-button-rounded pl-4 pr-4 action-btn primary pt-2 pb-2  mr-4 p-button-danger"></button>    
+                        </div>
+                        <div class="d-flex justify-content-center" *ngIf="(invitation.accepted && invitation.accepted =='rejected')">
+                            <button pButton pRipple type="button" label="Rejected" class="p-button-rounded pl-4 pr-4 action-btn primary pt-2 pb-2  mr-4 p-button-danger"></button>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+           </ng-container>
+            <ng-container *ngIf="noInvitations">
+                <div class="col-lg-12 col-md-12 p-10 no-groups jumbotron">
+                    <div class="container">
+                        <h4 class="info">No Invitations</h4>
+                        <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="showLoading">
+                <ng-container *ngFor="let item of contentLoadItems">
+                    <div class="col-lg-3 col-md-6 p-10 loading">
+                        <div class="custom-skeleton p-p-4">
+                            <div class="p-d-flex p-mb-3">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                                <div>
+                                    <p-skeleton width="10rem" styleClass="p-mb-2"></p-skeleton>
+                                    <p-skeleton width="5rem" styleClass="p-mb-2"></p-skeleton>
+                                    <p-skeleton height=".5rem"></p-skeleton>
+                                </div>
+                            </div>
+                            <p-skeleton width="100%" height="150px"></p-skeleton>
+                            <div class="p-d-flex p-jc-between p-mt-3">
+                                <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                                <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </ng-container>
+
+</div>
+
+<p-sidebar [dismissible]="false" (onHide)="sideBarHide(newGroupForm)" [(visible)]="showCreateGroupSideBar" [blockScroll]="true" styleClass="p-sidebar-md"
+	position="right" class="new-group-sidebar">
+	<form #newGroupForm="ngForm" autocomplete="off">
+		<div class="sidebar-inner">
+			<h2 class="heading">Create New Group</h2>
+			<div class="form-group">
+				<label for="group-nam">Group Name</label>
+				<input type="email" class="form-control" required name="groupName" [(ngModel)]="newGroupObj.name" id="group-name" placeholder="Group Name">
+			</div>
+
+			<div class="form-group">
+				<label for="group-desc">Description</label>
+				<textarea class="form-control" required name="groupDescription" id="group-desc" rows="3" [(ngModel)]="newGroupObj.groupDescription" placeholder="Type Message"></textarea>
+			</div>
+
+			<div class="third-section">
+				<div  class="group-pic" (click)="groupImageRef.value = null; selectGroupImage(groupImageRef)">
+					<span>
+						<span *ngIf="!selecteGroupImageUrl">
+							<i class="pi pi-pencil"></i><br>
+							<span>New Group</span>
+						</span>
+						<span *ngIf="selecteGroupImageUrl" class="position-relative">
+							<img class="groupImage" [src]="selecteGroupImageUrl" />
+							<i (click)="removeSelectedImage($event)" class="pi pi-times removeSelectedImage"></i>
+						</span>
+						
+						<input type="file" name="groupImage" class="inputWraper" #groupImageRef accept="image/*" (change)="handleFiles($event);" />
+					</span>
+				</div>
+				<div class="vertical-line"></div>
+				<div class="toggle-section">
+					<div class="toggle1 ml-2">
+						<span>Public</span>
+						<p-inputSwitch name="groupCategory" [(ngModel)]="newGroupObj.groupCategory"
+							[style]="{'width':'2.9rem','height':'1.6rem','margin-left': '5px', 'top': '6px'}">
+						</p-inputSwitch>
+					</div>
+					<div class="toggle1 ml-2">
+						<span>Set as Default Group</span>
+						<p-inputSwitch name="defaultGroup" [(ngModel)]="newGroupObj.defaultGroup"
+							[style]="{'width':'2.9rem','height':'1.6rem','margin-left': '5px', 'top': '6px'}">
+						</p-inputSwitch>
+					</div>
+					<!-- <button class="btn btn-addmore">Add More</button> -->
+				</div>
+			</div>
+			<!-- 
+	   	<div class="line-separator"></div> -->
+			<!-- <div class="add-member">
+	   		<div class="add-member-inner">
+	   			<i class="fa fa-plus"></i><br>
+	   			<span>Add Member</span>
+	   		</div>
+	   	</div> -->
+
+			<div class="btn-footer">
+				<button (click)="creteNewGroup(newGroupForm)" [disabled]="newGroupForm.invalid || createGroupClicked" class="btn btn-save">Save</button>
+				<button class="btn " (click)="showCreateGroupSideBar = false">Cancel</button>
+			</div>
+		</div>
+
+	</form>
+
+</p-sidebar>

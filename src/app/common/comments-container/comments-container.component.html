@@ -1,0 +1,65 @@
+<div class="comments-parent-container">
+    <div [class.hideComments]="!showCommentsContainer"  class="comment-container">
+      
+        <div class="comments-sec" *ngIf="_showComments">
+            <ng-container *ngFor="let mainCommentObj of commentsArray; let commentIndex=index;">
+                <app-main-comment [currentReplyIndex]="currentReplyIndex" (replyClickedMaincomment)="currentReplyIndex = $event" [commentIndex]="commentIndex" [loggedInUserDetails]="loggedInUserDetails"  [mainCommentObj]="mainCommentObj"></app-main-comment>
+            </ng-container>
+            <div *ngIf="showLoadMore">
+                <div class="show-more">
+                    <button pButton type="button" label="Show More..." (click)="loadMoreComments()" class="ui-button-rounded ui-button-info"></button>
+                </div>
+            </div>
+        </div>
+        <p-progressSpinner [style]="{width: '50px', height: '50px'}" [strokeWidth]="2" [animationDuration]="2" *ngIf="showSpinner"></p-progressSpinner>
+        <form #commentsForm autocomplete="off">
+            <div class="flex-content">
+                <div class="profile">
+                    <div (click)="navigateToProfile()"> <img [src]="loggedInUserDetails.profileImageUrl?loggedInUserDetails.profileImageUrl:''" /></div>
+                </div>
+
+                <div class="comment-input">
+                    <input #commentInput class="w-100" name="comment" [(ngModel)]="postComment"
+                        placeholder="write a comment..." id="float-input" type="text" size="30" pInputText>
+                    <div class="photo"><i (click)="commentImageInput.value = null; commentPhotoUpload()"
+                            class="fa fa-2x fa-camera camera-i" aria-hidden="true"></i>
+                            <i class="pi pi-send send-i" (click)="newCommentHandler(commentsForm)"></i>
+                        </div>
+                    
+                    <div class="wrapper">
+                        <input type="file" multiple name="commentimage" #commentImageInput accept="image/*"
+                        (change)="handleFiles($event);" />
+                            <!-- (change)="handleCommentPhotoUpload($event);" /> -->
+                            <button type="submit" (click)="newCommentHandler(commentsForm)" >Save</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <div *ngIf="selectedImageVideoFilesObjectURLs.length > 0" class="comment-img-prev">
+            <ngx-slick-carousel class="carousel w-100 courosel-comp" #slickModal="slick-carousel" [config]="PostSlideConfig">
+                <div ngxSlickItem *ngFor="let resource of selectedImageVideoFilesObjectURLs; let i=index;" class="slide">
+                  <div  class="position-relative" *ngIf="resource.fileType == 'image'">
+                    <img class="courosel-image img-fluid" [src]="resource.url">
+                    <div title="Remove item" (click)="removeSelectedUploadPost(i,resource)" class="remove-item"><i
+                        class="pi pi-times"></i></div>
+                  </div>
+                  <div class="position-relative" *ngIf="resource.fileType == 'video'">
+                    <video [ngStyle]="{display:resource.fileType == 'video'? 'block':'none'}" #postVideoRef id="outputVideo"
+                      [src]="resource.url" style="width:100%" controls controlsList="nodownload"></video>
+                    <div title="Remove item" (click)="removeSelectedUploadPost(i,resource)" class="remove-item"><i
+                        class="pi pi-times"></i></div>
+                  </div>
+                  <div class="position-relative" *ngIf="resource.fileType == 'pdf'">
+                    <pdf-viewer [src]="resource.url" [original-size]="false" [autoresize]="true" [render-text]="true"
+                      [show-borders]="true" [render-text-mode]="1" [zoom-scale]="'page-height'"
+                      style="display: block;  height: 400px; max-width:100%;">
+                    </pdf-viewer>
+                    <div title="Remove item" (click)="removeSelectedUploadPost(i,resource)" class="remove-item"><i
+                        class="pi pi-times"></i></div>
+                  </div>
+                </div>
+              </ngx-slick-carousel>
+        </div>
+    </div>
+</div>

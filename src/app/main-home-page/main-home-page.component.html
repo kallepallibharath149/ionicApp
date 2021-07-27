@@ -1,0 +1,21 @@
+<div class="main-home-continer">
+    <div class="body">
+        <div #leftSideContainer id="left-container" class="groups">
+            <div #sideGroup class="group">
+                <div class="left-side">
+                    <app-left-container [selectedGroup]="selectedGroup" [groupsListDetails]="groupsListDetails"></app-left-container>
+                </div>
+            </div>
+        </div>
+        <div id="middle-container" class="dynamic">
+            <router-outlet></router-outlet>
+        </div>
+        <div #rightSideContainer id="right-container" class="curren-chat">
+            <div #sideGroup2 class="group">
+                <div class="right-side">
+                    <app-right-container></app-right-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

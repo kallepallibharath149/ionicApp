@@ -1,0 +1,123 @@
+<div class="profile-section">
+    <div class="menu-items">
+        <div class="item d-flex align-items-end">
+          <div (click)="hamburgerClick()" class="item-align mr-4 hamburger"><i class="pi pi-bars" style="font-size: 2rem"></i></div>
+            <div class="item-align">
+                <span class="p-overlay-badge p-mr-5" (click)="checkNotifications();notificationPannel.toggle($event)">
+                    <i class="fa fa-bell text-white" style="font-size: 20px" aria-hidden="true"></i>
+                    <span *ngIf="notificationsList.length" class="p-badge p-badge-danger">{{notificationsList.length}}</span>
+                </span>
+            </div>
+            <div class="item-align mr-1 position-relative" #actualTarget id="profile-details" >
+                <img *ngIf="loggedInUserDetails.ImageUrl"  class="profile" (click)="accountsPannel.toggle($event)" [src]="loggedInUserDetails.ImageUrl" />
+                <div class="profile name"  *ngIf="!loggedInUserDetails.ImageUrl" (click)="accountsPannel.toggle($event)"><span class="text">{{profileTextLetter}}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-overlayPanel class="align_position" #accountsPannel [showTransitionOptions]="'150ms'"  [hideTransitionOptions]="'100ms'"  [dismissable]="true"
+[style]="{minWidth: '200px', maxWidth: '200px',height: '150px', minHeight: '150px', right:'10px'}"
+[styleClass]="'accounts-panel'">
+<ng-template pTemplate>
+    <div class="w-100 h-100 prof-container">
+        <div class="profile-name w-100">
+            <div title="{{loggedInUserDetails.firstName +' ' + loggedInUserDetails.lastName}}" class="text">{{'Welcome'+' '+loggedInUserDetails.firstName +' ' + loggedInUserDetails.lastName}}</div>
+            <div class="pt-2 options" (click)="navigateToProfile();accountsPannel.hide()">My Profile</div>
+            <div class="pt-2 options" (click)="showChangePasswordPanel();accountsPannel.hide()">Change Password</div>
+        </div>
+        <div class="w-100">
+            <div class="container-profile text-center">
+                <button pButton pRipple type="button" icon="pi pi-power-off" iconPos="left" (click)="logOut()" label="Logout"
+                    class="p-button-rounded p-button-sm p-button-secondary"></button>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+</p-overlayPanel>
+
+<p-overlayPanel class="align_position" #notificationPannel [showTransitionOptions]="'150ms'"  [hideTransitionOptions]="'100ms'"  [dismissable]="true"
+[style]="{minWidth: '300px', maxWidth: '300px', minHeight: '150px', right:'40px'}"
+[styleClass]="'notification-panel'">
+<ng-template pTemplate>
+   <div  class="container-profile">
+     <div class="pl-3 not-header"><h4 class="mb-0">Notifications</h4>
+      <i *ngIf="!reloadingNotifications" (click)="reloadNotification()" class="pr-3 fa fa-refresh" aria-hidden="true"></i>
+    </div>
+     <div class="infinite-scroll" infiniteScroll [infiniteScrollDistance]="0.5" alwaysCallback="true" [infiniteScrollDisabled]="notificationLoading" [immediateCheck]="true" [scrollWindow]="false" [infiniteScrollThrottle]="150" (scrolled)="lazyLoadNotifications()">
+      <div *ngFor="let notification of notificationsList">
+        <div class="notification-item {{notification.visited? 'visited':''}}" (click)="navigateToPage(notification);notificationPannel.hide()"> 
+          <div class="notification-icon position-relative">
+          <i *ngIf="notification.notificationType == 'GROUPS_INVITATION'" class="fa fa-users" aria-hidden="true"></i>
+          <i *ngIf="notification.notificationType == 'EVENTS_INVITATION'" class="fa fa-calendar" aria-hidden="true"></i>
+          <i *ngIf="notification.notificationType == 'NETWORK_INVITATION'" class="fa fa-address-card" aria-hidden="true"></i>
+          <div class="notification-seen" *ngIf="notification.visited">seen</div>
+        </div>
+          <div>
+            <span [title]="notification.notificationText">{{notification.notificationText}}</span>
+          </div>
+         </div>
+      </div>
+      <div *ngIf="!notificationLoading && noNotifiCationsItems" >
+          <div class="notification-item "> 
+            <div class="notification-icon position-relative">
+            <i  class="fa fa-bell" aria-hidden="true"></i>
+          </div>
+            <div>
+              <span>Don't have new notifications</span>
+            </div>
+        </div>
+      </div>
+        <div *ngIf="notificationLoading" class="text-center">
+          <p-progressSpinner [style]="{width: '40px', height: '40px'}" [strokeWidth]="2"></p-progressSpinner>
+         </div>
+     </div>
+    </div>
+</ng-template>
+</p-overlayPanel>
+
+
+<p-dialog header="Change Password" (onHide)="cancelChanges(updatePasswordForm)" [(visible)]="showUpdatePasswordModal" [modal]="true" [style]="{width: '600px'}"
+  [baseZIndex]="10000" [draggable]="false" [resizable]="false" styleClass="updatePassDialog">
+  <div>
+    <p-message *ngIf="passwordSecurityCode" [styleClass]="'text-break mb-3'" class="" severity="info" text="OTP sent to your registered mobile number. OTP is valid for 5 minute's" styleClass="p-mr-2"></p-message>
+    <form #updatePasswordForm="ngForm" autocomplete="off">
+        <div class="form-group">
+            <label for="newPassword">New password<sup>*</sup></label>
+            <input type="password" class="form-control" #newPassword="ngModel"
+              [class.is-invalid]="(newPassword.touched && newPassword.invalid)"
+              id="newPassword" required minlength="8"  name="newPassword" [(ngModel)]="newPasswordObj.newPassword"  placeholder="New Password"
+              (input)="newConfirmPassword.control.updateValueAndValidity()">
+            <span class="invalid-feedback" *ngIf="(newPassword.touched && newPassword.invalid && newPassword.errors?.required)">Password is equired</span>
+            <span class="invalid-feedback" *ngIf="(newPassword.touched && newPassword.invalid) && newPassword.errors?.minlength">  Password must be at least 8 characters long.</span>
+          </div>
+          <!-- <pre>{{newPassword.errors?(newPassword.errors | json):''}}</pre> -->
+          <div class="form-group">
+            <label for="newconfirmPasswordfiled">Confirm new password<sup>*</sup></label>
+            <input type="password" class="form-control" #newConfirmPassword="ngModel"
+              [class.is-invalid]="(newConfirmPassword.touched && newConfirmPassword.invalid)" id="newconfirmPasswordfiled" required
+              appConfirmEqualValidator="newPassword" name="newConfirmPassword" [(ngModel)]="newPasswordObj.newConfirmPassword"
+              placeholder="Confirm Password">
+            <span class="invalid-feedback" *ngIf="(newConfirmPassword.touched && newConfirmPassword.errors?.required)">Confirm
+              Password is required</span>
+            <span class="invalid-feedback" *ngIf="newConfirmPassword.touched && newConfirmPassword.errors?.notEqual &&
+                !newConfirmPassword.errors?.required">
+              Password and Confirm New Password does not match
+            </span>
+          </div>
+          <div class="form-group">
+            <label for="confirmOTP">Confirm OTP<sup>*</sup></label>
+            <input type="text" class="form-control" #newConfirmOTP="ngModel"
+              [class.is-invalid]="(newConfirmOTP.touched && newConfirmOTP.invalid)" id="confirmOTP" required
+               name="confirmOTP" [(ngModel)]="newPasswordObj.confirmOTP"
+              placeholder="Confirm OTP">
+            <span class="invalid-feedback" *ngIf="(newConfirmOTP.touched && newConfirmOTP.errors?.required)">Confirm OTP is required</span>
+          </div>
+    </form>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button"  (click)="updatePassword(updatePasswordForm)" label="Submit" class="p-button-rounded pl-4 pr-4  pt-2 pb-2 mt-3 action-btn primary"></button>
+    <button pButton pRipple type="button" (click)="cancelChanges(updatePasswordForm)" label="Cancel" class="p-button-rounded p-button-outlined pl-4 pr-4  pt-2 pb-2 mt-3 action-btn secondary"></button>
+  </ng-template>
+</p-dialog>

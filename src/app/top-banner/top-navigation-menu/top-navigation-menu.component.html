@@ -1,0 +1,10 @@
+<div>
+    <div class="menu-items">
+        <div (click)="updateCurrentmentitem(menu)" class="item {{currentActiveMenuItem?.menuName ==menu.menuName?'active':''}} {{menu.class?menu.class:''}}"
+            id="{{menu.id?menu.id:''}}" *ngFor="let menu of items">
+            <div [title]="menu.menuName"  class="item-align ">
+                <i class="{{menu.icon}} fa-2x " aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+</div>

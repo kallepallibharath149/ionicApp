@@ -1,0 +1,87 @@
+.main-home-continer {
+  width          : 100%;
+  display        : flex;
+  justify-content: center;
+
+  .body {
+    display        : flex;
+    flex-direction : row;
+    justify-content: space-between;
+
+    .groups {
+      width    : 20%;
+      min-width: 270px;
+      // padding  : 0 20px 0px 20px;
+      position : sticky;
+
+      .group {
+        overflow-x: hidden;
+        overflow-y: hidden;
+
+        &:hover {
+          overflow-y         : auto;
+          overscroll-behavior: contain;
+          scroll-behavior    : smooth;
+        }
+      }
+    }
+
+    .curren-chat {
+      position : sticky;
+      width    : 20%;
+      min-width: 270px;
+      // padding  : 0 20px 0 20px;
+
+      .group {
+        .right-side {}
+
+        overflow-y: hidden;
+        overflow-x: hidden;
+
+        &:hover {
+          overflow-y         : auto;
+          overscroll-behavior: contain;
+          scroll-behavior    : smooth;
+        }
+      }
+    }
+
+    .dynamic {
+      width  : calc(100% - 540px);
+      padding-top: 20px;
+    }
+  }
+
+  @media only screen and (max-width: 767px) {
+
+    #left-container,
+    #right-container {
+      display: none;
+    }
+
+    #middle-container {
+      width   : 100%;      // width: calc(100% - 500px);
+      padding-top : 20px;
+    }
+  }
+
+  @media only screen and (min-width: 768px) and (max-width: 1100px) {
+    #middle-container {
+      width: calc(100% - 270px);
+    }
+    #right-container {
+      display: none;
+    }
+  }
+}
+
+.body {
+  max-width: 1464px;
+  width    : 100%;
+}
+
+@media (max-width: 1920px) {
+  .body {
+    max-width: none;
+  }
+}

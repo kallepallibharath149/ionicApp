@@ -1,0 +1,45 @@
+<div class="overlay-container">
+<div class="flex-container">
+    <div class="content-section">
+        <div class="header">
+            <div class="close-icon"><i (click)="activeModal.dismiss('Cross click')" class="fa fa-2x fa-times-circle" aria-hidden="true"></i></div>
+        </div>
+        <div class="content">
+        <img *ngIf="ImageUrl" src="{{ImageUrl}}" />
+        <video id="outputVideo" class="video-review" *ngIf="videoUrl" [src]="videoUrl" controls></video>
+        </div>
+        <div class="footer">    
+        </div>
+    </div>
+    <div class="details-section">
+     <div>
+      
+     </div>   
+    </div>
+</div>
+</div>
+
+<!-- <ng-template #overlayRef let-modal>
+     <div class="overlay-container">
+      <div class="row m-0 flex-container">
+       <div class="col-md-8  col-sm-12 content-section">
+           <div class="image-container">
+            <div class="close-icon"><i (click)="modal.dismiss('Cross click')" class="fa fa-2x fa-times-circle" aria-hidden="true"></i></div>
+               <div class="blur-photo">
+                   <img class="img-fluid" [src]="currentImageOverlay.imgSrc" />
+               </div>
+               <div class="original-photo">
+                <img class="img-fluid" [src]="currentImageOverlay.imgSrc" /> 
+               </div>
+           </div>
+       </div>
+       <div class="col-md-4 col-sm-12 profile-section">
+         <div class="profile">
+            <div>
+              <app-profile-with-comments [userDetails]="userDetails"></app-profile-with-comments>
+            </div>
+         </div>
+       </div>
+      </div>
+     </div>
+  </ng-template> -->

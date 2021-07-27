@@ -1,0 +1,410 @@
+<div class="section-data">
+    <div class="info-container">
+        <div class="row flex-nowrap ml-0 mr-0">
+            <div class="col-sm-12 tabscont d-flex flex-nowrap">
+                <div (click)="tabClick(i,tab.label )" class="info-labels {{activeTabIndex == i? 'active':''}}"
+                    *ngFor="let tab of infoTabs; let i =index;">
+                    <div *ngIf="tab.label =='Pending Invitations' && (_group.memberType =='MainAdmin' || _group.memberType == 'Admin')"
+                        class="label">{{tab.label}}</div>
+                    <div *ngIf="tab.label !='Pending Invitations'" class="label">{{tab.label}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-body group-data" #groupScroll infiniteScroll [scrollWindow]="false" alwaysCallback="true"
+        [infiniteScrollDisabled]="showSkeliton" [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100"
+        (scrolled)="lazyLoad()">
+        <ng-container *ngIf="activeTabName == 'Group info'">
+            <div class="group-info">
+                <div class="group-img">
+                    <ng-container *ngIf="_group.groupImageUrl || selecteGroupImageUrl">
+                        <img class="header-image"
+                            [src]="selecteGroupImageUrl?selecteGroupImageUrl:filesBaseURL+_group.groupImageUrl">
+                        <img class="imge-backdrop"
+                            [src]="selecteGroupImageUrl?selecteGroupImageUrl:filesBaseURL+_group.groupImageUrl">
+                    </ng-container>
+                    <ng-container *ngIf="!_group.groupImageUrl && !selecteGroupImageUrl">
+                        <div class="no-image"></div>
+                    </ng-container>
+                    <div class="edit" #editRef>
+                        <i class="pi pi-pencil" (click)="groupImageOptions.toggle($event)"></i>
+                        <div class="wraper">
+                            <input type="file" name="groupImage" class="inputWraper" #groupImageRef accept="image/*"
+                                (change)="handleFiles($event);" />
+                        </div>
+                        <div class="position-relative" editRef>
+                            <p-overlayPanel [appendTo]="editRef" styleClass="image-options-overlay" baseZIndex="3000"
+                                #groupImageOptions [showTransitionOptions]="'150ms'" [hideTransitionOptions]="'100ms'"
+                                [dismissable]="true"
+                                [style]="{minWidth: '170px', maxWidth: '200px', minHeight: '125x'}">
+                                <ng-template pTemplate>
+                                    <div style="position: relative;">
+                                        <div class="menu-options d-flex flex-column">
+                                            <ng-container *ngFor="let action of imageActions; let i=index;">
+                                                <ng-container *ngIf="_group.groupImageUrl">
+                                                    <div *ngIf="selecteGroupImageUrl && (action.label == 'Update Group Image' || action.label =='Cancel')"
+                                                        (click)="groupImageAction(action.label);groupImageOptions.hide()"
+                                                        class="item">{{action.label}}</div>
+                                                    <div *ngIf="!selecteGroupImageUrl && (action.label != 'Upload Group Image' && action.label !='Cancel')"
+                                                        (click)="groupImageAction(action.label);groupImageOptions.hide()"
+                                                        class="item">{{action.label}}</div>
+                                                </ng-container>
+                                                <ng-container *ngIf="!_group.groupImageUrl">
+                                                    <div *ngIf="selecteGroupImageUrl && (action.label == 'Upload Group Image' || action.label =='Cancel')"
+                                                        (click)="groupImageAction(action.label);groupImageOptions.hide()"
+                                                        class="item">{{action.label}}</div>
+                                                    <div *ngIf="!selecteGroupImageUrl && (action.label == 'Upload Group Image')"
+                                                        (click)="groupImageAction(action.label);groupImageOptions.hide()"
+                                                        class="item">{{action.label}}</div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </p-overlayPanel>
+                        </div>
+                    </div>
+                </div>
+                <div class="group-details">
+                    <div class="section">
+                        <div class="key">
+                            Group Name :
+                        </div>
+                        <div class="value">
+                            <p-inplace #inlineEdit1 [style]="{'min-height':'33px','width':'100%'}">
+                                <ng-template pTemplate="display">
+                                    <span (click)="editGroupDetails()" class="g-text">{{_groupCopy.groupName}} <i
+                                            class="pi ml-2 pi-pencil"></i></span>
+                                </ng-template>
+                                <ng-template pTemplate="content">
+                                    <input class="w-100" type="text" [(ngModel)]="_groupCopy.groupName" pInputText>
+                                </ng-template>
+                            </p-inplace>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="key">
+                            Group Description :
+                        </div>
+                        <div class="value">
+                            <p-inplace class="in-p-edit" #inlineEdit2 [style]="{'min-height':'33px'}">
+                                <ng-template pTemplate="display">
+                                    <span (click)="editGroupDetails()" class="g-text">
+                                        <p>{{_groupCopy.groupDescription}}<i class="pi ml-2 pi-pencil"></i></p>
+                                    </span>
+                                </ng-template>
+                                <ng-template pTemplate="content">
+                                    <textarea class="w-100" [rows]="8" [cols]="20" pInputTextarea
+                                        [(ngModel)]="_groupCopy.groupDescription"></textarea>
+                                </ng-template>
+                            </p-inplace>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="key">
+                            Public Group :
+                        </div>
+                        <div class="value">
+                            <p-inplace class="in-p-edit" #inlineEdit3 [style]="{'min-height':'33px'}">
+                                <ng-template pTemplate="display">
+                                    <span (click)="editGroupDetails()">{{_groupCopy.groupCategory?'Yes':'No'}}<i
+                                            class="pi ml-2 pi-pencil"></i></span>
+                                </ng-template>
+                                <ng-template pTemplate="content">
+                                    <p-inputSwitch [(ngModel)]="_groupCopy.groupCategory"></p-inputSwitch>
+                                </ng-template>
+                            </p-inplace>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="activeTabName == 'Group Members'">
+            <div class="search-row">
+                <div class="mt-2 mr-2">
+                    <div class="search-box">
+                        <input class="form-control w-100" name="memberSearch" [(ngModel)]="searchTerm" type="text"
+                            placeholder="Search..">
+                        <div class="icons">
+                            <i (click)="filterBySearch('Group Members',searchTerm)" class="fa fa-search search"></i>
+                            <i *ngIf="searchTerm" (click)="clearSearch('Group Members',searchTerm)"
+                                class="fa clear-search pi pi-times"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="invite-button mt-2">
+                    <button pButton pRipple type="button" (click)="inviteToGroup()" label="Invite to Group"
+                        class="p-button-rounded pl-4 pr-4  pt-2 pb-2 p-button-danger"></button>
+                </div>
+            </div>
+            <div class="members-container">
+                <div class="members-card" [ngClass]="{'last-member':last, 'first-member':first}"
+                    *ngFor="let member of groupMembers; let memberIndex=index; let first=first; let last= last ;">
+                    <div class="image">
+                        <img *ngIf="member.profileImageUrl" [src]="filesBaseURL+member.profileImageUrl" />
+                        <img *ngIf="!member.profileImageUrl" [src]="'assets/images/profilepic.jpg'" />
+                    </div>
+                    <div class="details">
+                        <div class="d-flex flex-row align-items-center">
+                            <div [title]="member.profileName" class="name">{{member.profileName}}</div>
+                            <div class="icon position-relative" #mydiv (click)="memberOptions.toggle($event)">
+                                <i class="pi pi-ellipsis-v"></i>
+                                <p-overlayPanel class="group_member_option" styleClass="group_member_option"
+                                    baseZIndex="3000" #memberOptions [showTransitionOptions]="'150ms'"
+                                    [hideTransitionOptions]="'100ms'" [dismissable]="true"
+                                    [style]="{minWidth: '170px', maxWidth: '200px', minHeight: '125x'}">
+                                    <ng-template pTemplate>
+                                        <div style="position: relative;">
+                                            <div class="menu-options d-flex flex-column">
+                                                <ng-container *ngFor="let action of memberActionItems; let i=index;">
+                                                    <ng-container *ngIf="(_group.memberType =='MainAdmin' || _group.memberType =='Admin');else elseBlock">
+                                                        <ng-container *ngIf="member.memberType =='member' && (action.label !='Remove Admin Access')">
+                                                            <div class="item" (click)="groupMembersActions(action.label, member, memberIndex)">
+                                                                {{action.label}}
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-container *ngIf="member.memberType =='admin' && (action.label !='Give Admin Access')">
+                                                            <div class="item" (click)="groupMembersActions(action.label, member, memberIndex)">
+                                                                {{action.label}}
+                                                            </div>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                    <ng-template #elseBlock>
+                                                        <ng-container *ngIf="_group.memberType =='Member' && action.label =='Member info'">
+                                                            <div class="item" (click)="groupMembersActions(action.label, member, memberIndex)">
+                                                                {{action.label}}
+                                                            </div>
+                                                        </ng-container>
+                                                    </ng-template>
+                                                   
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-overlayPanel>
+                            </div>
+                        </div>
+                        <div class="type" [title]="member.memberType">{{member.memberType}}</div>
+                    </div>
+                </div>
+                <ng-container *ngIf="showSkeliton">
+                    <ng-container *ngFor="let item of loadingItems">
+                        <div class="member-contentLoad">
+                            <div class="p-d-flex p-mb-3 justify-content-center">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                            </div>
+                            <div class="w-100 p-2">
+                                <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton height=".5rem" width="8rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="noGroupMembers">
+                    <div class="col-lg-9 col-md-12 p-10 no-groups jumbotron">
+                        <div class="container text-center">
+                            <h4 class="info">No Group Members</h4>
+                            <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="activeTabName == 'Pending Invitations'">
+            <div class="search-row">
+                <div class="mt-2 mr-2">
+                    <div class="search-box">
+                        <input class="form-control w-100" name="memberSearch" [(ngModel)]="searchTerm" type="text"
+                            placeholder="Search..">
+                        <div class="icons">
+                            <i (click)="filterBySearch('Pending Invitations',searchTerm)"
+                                class="fa fa-search search"></i>
+                            <i *ngIf="searchTerm" (click)="clearSearch('Pending Invitations',searchTerm)"
+                                class="fa clear-search pi pi-times"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="invite-button mt-2">
+                    <button pButton pRipple type="button" (click)="inviteToGroup()" label="Invite to Group"
+                        class="p-button-rounded pl-4 pr-4  pt-2 pb-2 p-button-danger"></button>
+                </div>
+            </div>
+            <div class="members-container">
+                <div class="invite-card" [ngClass]="{'last-member':last, 'first-member':first}"
+                    *ngFor="let invitation of pendingInvitations; let first=first; let last= last ;">
+                    <div class="image">
+                        <p-timeline [value]="invitation.timeLine" layout="vertical" [align]="'right'"
+                            styleClass="customized-timeline">
+                            <ng-template pTemplate="marker" let-event>
+                                <span class="custom-marker p-shadow-2" [style.backgroundColor]="event.color">
+                                    <img *ngIf="event.profileImageUrl" width="40" height="40"
+                                        style="border-radius: 50%;" [src]="filesBaseURL+event.profileImageUrl" />
+                                    <img *ngIf="!event.profileImageUrl" width="40" height="40"
+                                        style="border-radius: 50%;" [src]="'assets/images/profilepic.jpg'" />
+                                </span>
+                            </ng-template>
+                            <ng-template pTemplate="content" let-event>
+                                <div>
+                                    <div class="{{event.invitedBy?'invite-by':'invitee'}}">{{event.invitedBy?'Invited
+                                        By':'Invitee'}}</div>
+                                    <div [title]="event.profileName" class="text-ellipse">{{event.profileName}}</div>
+                                    <div class="text-date">{{event.invitationSentTime? (event.invitationSentTime|
+                                        timeAgo):''}}</div>
+                                </div>
+                            </ng-template>
+                        </p-timeline>
+                    </div>
+                    <div class="details">
+                        <div *ngIf="!invitation.ApproveStatus"
+                            class="d-flex flex-row justify-content-between align-items-center">
+                            <button pButton pRipple type="button" (click)="approveRejectMembers(invitation, 'approve')"
+                                label="Approve" class="p-button-rounded pl-4 pr-4 mr-4 b-btn-sm b-primary-btn"></button>
+                            <button pButton pRipple type="button" (click)="approveRejectMembers(invitation, 'reject')"
+                                label="Reject" class="p-button-rounded  b b-btn-sm b-secondary-btn"></button>
+                        </div>
+                        <div *ngIf="invitation.ApproveStatus"
+                            class="d-flex flex-row justify-content-center align-items-center">
+                            <ng-container *ngIf="invitation.ApproveStatus == 'approved'">
+                                <button pButton pRipple type="button" label="Approved"
+                                    class="p-button-rounded pl-4 pr-4 mr-4 b-btn-sm b-primary-btn"></button>
+                            </ng-container>
+                            <ng-container *ngIf="invitation.ApproveStatus == 'rejected'">
+                                <button pButton pRipple type="button" label="Rejected"
+                                    class="p-button-rounded  b b-btn-sm b-secondary-btn"></button>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <ng-container *ngIf="showSkeliton">
+                    <ng-container *ngFor="let item of loadingItems">
+                        <div class="member-contentLoad">
+                            <div class="p-d-flex p-mb-3 justify-content-center">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                            </div>
+                            <div class="w-100 p-2">
+                                <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton height=".5rem" width="8rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="noPendingInvitations">
+                    <div class="col-lg-9 col-md-12 p-10 no-groups jumbotron">
+                        <div class="container text-center">
+                            <h4 class="info">No Pending Invitations</h4>
+                            <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="activeTabName == 'Sent Invitations'">
+            <div class="search-row">
+                <div class="mt-2 mr-2">
+                    <div class="search-box">
+                        <input class="form-control w-100" name="memberSearch" [(ngModel)]="searchTerm" type="text"
+                            placeholder="Search..">
+                        <div class="icons">
+                            <i (click)="filterBySearch('Sent Invitations',searchTerm)" class="fa fa-search search"></i>
+                            <i *ngIf="searchTerm" (click)="clearSearch('Sent Invitations',searchTerm)"
+                                class="fa clear-search pi pi-times"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="invite-button mt-2">
+                    <button pButton pRipple type="button" (click)="inviteToGroup()" label="Invite to Group"
+                        class="p-button-rounded pl-4 pr-4  pt-2 pb-2 p-button-danger"></button>
+                </div>
+            </div>
+            <div class="members-container">
+                <div class="invite-card sent-inv" [ngClass]="{'last-member':last, 'first-member':first}"
+                    *ngFor="let sentInvitation of sentInvitations; let first=first; let last= last ;">
+                    <div class="image">
+                        <p-timeline [value]="sentInvitation.timeLine" layout="vertical" [align]="'right'"
+                            styleClass="customized-timeline">
+                            <ng-template pTemplate="marker" let-event>
+                                <span class="custom-marker p-shadow-2" [style.backgroundColor]="event.color">
+                                    <img *ngIf="event.profileImageUrl" width="40" height="40"
+                                        style="border-radius: 50%;" [src]="filesBaseURL+event.profileImageUrl" />
+                                    <img *ngIf="!event.profileImageUrl" width="40" height="40"
+                                        style="border-radius: 50%;" [src]="'assets/images/profilepic.jpg'" />
+                                </span>
+                            </ng-template>
+                            <ng-template pTemplate="content" let-event>
+                                <div>
+                                    <div class="{{event.invitedBy?'invite-by':'invitee'}}">{{event.invitedBy?'Invited
+                                        By':'Invitee'}}</div>
+                                    <div [title]="event.profileName" class="text-ellipse">{{event.profileName}}</div>
+                                    <div class="text-date">{{event.invitationSentTime? (event.invitationSentTime|
+                                        timeAgo):''}}</div>
+                                </div>
+                            </ng-template>
+                        </p-timeline>
+                    </div>
+                    <div class="details">
+                        <div class="d-flex status">
+                            <div class="key">Status</div>
+                            <div class="status-text">{{sentInvitation.status}}</div>
+                        </div>
+                        <div class="status d-flex">
+                            <div class="key"></div>
+                            <div class="status-text text-date">
+                                {{sentInvitation.invitationAdminActionTime?(sentInvitation.invitationAdminActionTime|
+                                timeAgo):'' }}</div>
+                        </div>
+                    </div>
+                </div>
+                <ng-container *ngIf="showSkeliton">
+                    <ng-container *ngFor="let item of loadingItems">
+                        <div class="member-contentLoad">
+                            <div class="p-d-flex p-mb-3 justify-content-center">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                            </div>
+                            <div class="w-100 p-2">
+                                <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton height=".5rem" width="8rem"></p-skeleton>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="noSentInvitations">
+                    <div class="col-lg-9 col-md-12 p-10 no-groups jumbotron">
+                        <div class="container text-center">
+                            <h4 class="info">No Sent Invitations</h4>
+                            <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+        <p-scrollTop [style]="{width: '30px', height: '30px'}" target="parent"></p-scrollTop>
+    </div>
+    <div class="modal-footer">
+        <ng-container *ngIf="activeTabName != 'Group info'">
+            <button pButton pRipple (click)="modalRef.dismiss('Cross click')" type="button" label="Close"
+                class="p-button-rounded b-primary-btn"></button>
+        </ng-container>
+        <ng-container *ngIf="activeTabName == 'Group info'">
+            <ng-container *ngIf="selecteGroupImageUrl || groupDetailsEdit">
+                <button pButton pRipple (click)="saveGroupChanges()" type="button" label="Save"
+                    class="p-button-rounded pl-4 pr-4 mr-4 b-primary-btn"></button>
+                <button pButton pRipple (click)="cancelGroupEdit(selecteGroupImageUrl,groupDetailsEdit)" type="button"
+                    label="Cancel" class="p-button-rounded mr-4 b-secondary-btn"></button>
+            </ng-container>
+            <ng-container *ngIf="!selecteGroupImageUrl && !groupDetailsEdit">
+                <button pButton pRipple (click)="modalRef.dismiss('Cross click')" type="button" label="Close"
+                    class="p-button-rounded mr-4 b-primary-btn"></button>
+            </ng-container>
+        </ng-container>
+    </div>
+</div>
+
+<p-confirmDialog class="confirm-del" [style]="{width: '50vw'}" [baseZIndex]="10000"
+    acceptButtonStyleClass="p-button-rounded b-btn-sm b-primary-btn"
+    rejectButtonStyleClass="p-button-rounded b-btn-sm b-secondary-btn"></p-confirmDialog>

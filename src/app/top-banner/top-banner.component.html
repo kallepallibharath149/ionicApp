@@ -1,0 +1,105 @@
+<div class="top-bannercontainer">
+    <div class="top-items">
+
+        <div class="item brand">
+            <h3>cousincircle</h3>
+        </div>
+
+        <div id="search" class="item {{globalSearchFocused ? 'search-focused':''}}">
+            <div class="w-100">
+                <form #globalSearchForm="ngForm" (submit)="searchGlobalSearchResults()" ngForm novalidate autocomplete="off">
+                    <span class="p-input-icon-left w-100">
+                        <i class="pi pi-search text-light"></i>
+                        <i (click)="clearGlobalSearch()" *ngIf="!showGlobalSearchLoading && globalSearch" class="pi pi-times"></i>
+                        <i *ngIf="showGlobalSearchLoading" class="pi pi-spin pi-spinner"></i>
+                        <input (focusin)="globalSearchFocused = true;"  (focusout)="globalSearchFocused = false;" class="global-search" #globalSearchInput type="text" name="globalSearch" pInputText
+                            placeholder="Search" [(ngModel)]="globalSearch" />
+                        <div class="global-search-results" infiniteScroll [scrollWindow]="false" [infiniteScrollDisabled]="showGlobalSearchLoading" alwaysCallback="true"  [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100" (scrolled)="lazyLoadSearch()">
+                            <div>
+                                <div *ngIf="globalSearchResultsToView.localSearch.length" class="local-results section">
+                                    <div class="header">App Results</div>
+                                    <div class="item" (click)="navigateToAppSearchResults(searchItem)" *ngFor="let searchItem of globalSearchResultsToView.localSearch">
+                                        <div class="search-item d-flex align-items-center flex-wrap">{{searchItem.displayText}}</div>
+                                    </div>
+                                </div>
+                                <div *ngIf="globalSearchResultsToView.membersSearch.length" class="members-results section">
+                                    <div class="header">Members Results</div>
+                                    <div (click)="navigateToProfile(membersSearchItem)" class="item" *ngFor="let membersSearchItem of globalSearchResultsToView.membersSearch">
+                                        <div class="search-item d-flex align-items-center flex-wrap">
+                                            <div>
+                                                <img *ngIf="membersSearchItem.profileImageUrl" class="profile-image"
+                                                    [src]="baseUrl+membersSearchItem.profileImageUrl" />
+                                                <div *ngIf="!membersSearchItem.profileImageUrl" class="profile-image"></div>
+                                            </div>
+                                            <div class="pl-3">{{membersSearchItem.profileName}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="!showGlobalSearchLoading && !globalSearchResultsToView.localSearch.length && !globalSearchResultsToView.membersSearch.length && globalSearch">
+                                  No Search Results
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </form>
+            </div>
+        </div>
+        <div id="profiles" class="item">
+            <app-account-and-profile (homburgerClicked)="homburgerClicked($event)"></app-account-and-profile>
+        </div>
+
+    </div>
+</div>
+<div class="navs w-100 d-flex align-items-center justify-content-center">
+    <div class="nav-items">
+        <ng-container *ngFor="let item of navItems; let i=index;">
+            <div (click)="navigateRoute(i, item)" class="item {{activeIndex==i?'active':''}}">{{item.navLink}}
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+<div [ngStyle]="{'display':hamburgerClikedState ? 'block':'none'}" class="search-screen">
+     <div class="row align-items-center justify-content-center m-0 w-100">
+        <div class="back" (click)="homburgerClicked(true)">  <i class="pi pi-arrow-left"></i></div>
+        <div id="search-res" class="item p-3 {{globalSearchFocused ? 'search-focused':''}}">
+            <div class="w-100">
+                <form #globalSearchFormOverlay="ngForm" (submit)="searchGlobalSearchResults()" ngForm novalidate autocomplete="off">
+                    <span class="p-input-icon-left w-100">
+                        <i class="pi pi-search text-light"></i>
+                        <i (click)="clearGlobalSearch()" *ngIf="!showGlobalSearchLoading && globalSearch" class="pi pi-times"></i>
+                        <i *ngIf="showGlobalSearchLoading" class="pi pi-spin pi-spinner"></i>
+                        <input (focusin)="globalSearchFocused = true;"  (focusout)="globalSearchFocused = false;" class="global-search" #globalSearchInput1 type="text" name="globalSearch" pInputText
+                            placeholder="Search" [(ngModel)]="globalSearch" />
+                        <div class="global-search-results" infiniteScroll [scrollWindow]="false" [infiniteScrollDisabled]="showGlobalSearchLoading" alwaysCallback="true"  [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100" (scrolled)="lazyLoadSearch()">
+                            <div>
+                                <div *ngIf="globalSearchResultsToView.localSearch.length" class="local-results section">
+                                    <div class="header">App Results</div>
+                                    <div class="item" (click)="navigateToAppSearchResults(searchItem)" *ngFor="let searchItem of globalSearchResultsToView.localSearch">
+                                        <div class="search-item d-flex align-items-center flex-wrap">{{searchItem.displayText}}</div>
+                                    </div>
+                                </div>
+                                <div *ngIf="globalSearchResultsToView.membersSearch.length" class="members-results section">
+                                    <div class="header">Members Results</div>
+                                    <div (click)="navigateToProfile(membersSearchItem)" class="item" *ngFor="let membersSearchItem of globalSearchResultsToView.membersSearch">
+                                        <div class="search-item d-flex align-items-center flex-wrap">
+                                            <div>
+                                                <img *ngIf="membersSearchItem.profileImageUrl" class="profile-image"
+                                                    [src]="baseUrl+membersSearchItem.profileImageUrl" />
+                                                <div *ngIf="!membersSearchItem.profileImageUrl" class="profile-image"></div>
+                                            </div>
+                                            <div class="pl-3">{{membersSearchItem.profileName}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="!showGlobalSearchLoading && !globalSearchResultsToView.localSearch.length && !globalSearchResultsToView.membersSearch.length && globalSearch">
+                                  No Search Results
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </form>
+            </div>
+        </div>
+    </div>  
+</div>

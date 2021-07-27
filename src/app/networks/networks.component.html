@@ -1,0 +1,19 @@
+<div class="networks-container">
+    <div class="row mt-3 mb-3 justify-content-center m-0 m-3 p-0">
+        <div class="btn-group">
+            <ng-container *ngFor="let tab of Tabs; let i=index;">
+                <button type="button" (click)="tabClicked(tab.tabRef)"  class="btn {{currentTab == tab.tabRef?' btn-selected':''}}">{{tab.tabName}}</button>
+            </ng-container>
+        </div>
+    </div>
+    <div class="content-sec">
+        <ng-container *ngIf="currentTab =='myConnections'">
+        <app-connections></app-connections>
+        </ng-container>
+        <ng-container *ngIf="currentTab =='network'">
+         <!-- <app-pie></app-pie> -->
+         <app-network></app-network>
+         <!-- <app-bar></app-bar> -->
+        </ng-container>
+    </div>
+</div>

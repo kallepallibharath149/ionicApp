@@ -1,0 +1,371 @@
+<div class="login-container">
+  <div class="box-container">
+    <div class="logo">
+      <h3 class="ds" #ref (click)="animate(ref)">cousincircle</h3>
+    </div>
+    <div *ngIf="showWarning" class="warn-container">
+      <p-messages severity="warn">
+        <ng-template pTemplate>
+          <div style="width:210px" class="p-ml-2">Please Enter Email and Password</div>
+        </ng-template>
+      </p-messages>
+    </div>
+    <form #loginForm="ngForm" autocomplete="off" class="sign-in">
+      <div class="d-flex align-items-start flex-row flex-wrap login-inputs justify-content-center">
+        <div class="item-margin mt-4">
+          <span class="p-input-icon-left">
+            <i class="pi pi-user"></i>
+            <input class="text-black base-font user-inputs form-control" type="text" [class.is-invalid]="(loginUserName.touched && loginUserName.invalid)" #loginUserName="ngModel" pInputText [required]="true" name="email"
+              placeholder="Email" [(ngModel)]="userName" />
+          </span>
+        </div>
+        <div class="d-flex flex-column item-margin mt-4">
+          <div>
+            <span class="p-input-icon-left">
+              <i class="pi pi-key"></i>
+              <input class="text-black base-font user-inputs form-control" type="password" [class.is-invalid]="(loginPass.touched && loginPass.invalid)" #loginPass="ngModel" pInputText [required]="true" name="password"
+                placeholder="Password" [(ngModel)]="password" />
+            </span>
+          </div>
+          <div class="forgot-pass mt-3" (click)="forgottPassword = !forgottPassword">
+            Forgotten password?
+          </div>
+          <div class="mt-3 d-flex flex-column">
+            <button pButton pRipple type="submit" label="Sign In" (click)="validateLogin(loginForm)"
+              class="p-button-rounded pl-4 pr-4 pt-2 pb-2 b-sign-in"></button>
+            <button pButton pRipple type="button" label="Sign Up" (click)="showSignUp();"
+              class="p-button-rounded p-button-outlined pl-4 pr-4  pt-2 pb-2 mt-3 b-sign-up"></button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="copy-right">COUSINCIRCLE © 2020</div>
+</div>
+
+
+<p-sidebar [dismissible]="false" (onHide)="sideBarHide(signUpForm)" styleClass="{{(completeSignUpModel || showLoading)?'invisible ':'visible '}}"  [(visible)]="visibleSidebar" position="right" [baseZIndex]="10000"
+  [style]="{width: '300px',height:'100%',overflow:'auto'}">
+  <ng-container>
+    <h3 class="text-danger font-weight-bold">Create Account</h3>
+    <div>
+      <form #signUpForm="ngForm" ngForm novalidate autocomplete="off">
+        <div class="form-group">
+          <label for="firstNamefiled" class="control-label">First Name<sup>*</sup></label>
+          <input type="text" class="form-control" [class.is-invalid]="(firstName.touched && firstName.invalid)"
+            id="firstNamefiled" #firstName="ngModel" [(ngModel)]="signUpObj.firstName" required name="firstName"
+            placeholder="First Name">
+          <span class="invalid-feedback" *ngIf="(firstName.touched && firstName.invalid)">First Name is
+            required</span>
+        </div>
+        <div class="form-group">
+          <label for="lastNamefiled">Last Name<sup>*</sup></label>
+          <input type="text" class="form-control" [class.is-invalid]="(lastName.touched && lastName.invalid)"
+            id="lastNamefiled" #lastName="ngModel" required [(ngModel)]="signUpObj.lastName" name="lastName"
+            placeholder="Last Name">
+          <span class="invalid-feedback" *ngIf="(lastName.touched && lastName.invalid)">Last Name is
+            required</span>
+        </div>
+        <div class="form-group">
+          <label for="emailfiled">Email<sup>*</sup></label>
+          <input type="text" class="form-control" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+            #email="ngModel" [class.is-invalid]="(email.touched && email.invalid)" id="emailfiled" required name="email"
+            [(ngModel)]="signUpObj.email" placeholder="Email">
+          <span class="invalid-feedback" *ngIf="(email.touched && email.errors?.required)"> Email is required</span>
+          <span class="invalid-feedback" *ngIf="(email.touched && email.errors?.pattern)"> Email is invallid</span>
+        </div>
+        <div class="form-group">
+          <label for="phonefiled" class="d-block">Country Code<sup>*</sup></label>
+          <p-dropdown class="change-number-dropdown {{countryCode.touched && countryCode.invalid ? 'is-invalid':''}}" #countryCode="ngModel" styleClass="{{countryCode.touched && countryCode.invalid ? 'is-invalid':''}}" [required]="true"
+          [appendTo]="countryCodeAppend" name="code" [options]="COUNTRY_LIST" (onChange)="countryCodeChange($event.value, signUpObj)"
+          [(ngModel)]="signUpObj.code" optionLabel="countryName" [filter]="true" filterBy="countryName"
+          [showClear]="false" placeholder="Country Code">
+          <ng-template pTemplate="selectedItem">
+            <div class="country-item country-item-value" *ngIf="signUpObj.code">
+              <div>{{signUpObj.code.dial_code}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-country pTemplate="item">
+            <div class="country-item w-100 d-flex justify-content-between">
+              <div class="text-ellipse" [title]="country.countryName" style="width: 80%; word-break: break-all;">
+                {{country.countryName }}</div>
+              <div style="width: 20%">{{country.dial_code }}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+          <span class="invalid-feedback" *ngIf="(countryCode.touched && countryCode.invalid)">Country Code is
+            required</span>
+        </div>
+        <div class="form-group">
+          <label for="phonefiled" class="d-block">Phone No<sup>*</sup></label>
+          <p-inputMask [required]="true" #phone="ngModel" [class.is-invalid]="(phone.touched && phone.invalid)"
+            id="phonefiled" name="phone" [type]="'tel'" placeholder="xxxxxxxxxx" [(ngModel)]="signUpObj.phone"
+            mask="9999999999" styleClass="form-control {{phone.touched && phone.invalid ? 'is-invalid':''}}">
+          </p-inputMask>
+          <span class="invalid-feedback" *ngIf="(phone.touched && phone.invalid)">Phone number is
+            required</span>
+        </div>
+        <div class="form-group">
+          <label for="cityfiled">City<sup>*</sup></label>
+          <input type="text" class="form-control" #city="ngModel" [class.is-invalid]="(city.touched && city.invalid)"
+            id="cityfiled" required name="city" [(ngModel)]="signUpObj.city" placeholder="City">
+          <span class="invalid-feedback" *ngIf="(city.touched && city.invalid)">City is
+            required</span>
+        </div>
+        <div class="form-group">
+          <label for="statefiled">State<sup>*</sup></label>
+          <input type="text" class="form-control" #state="ngModel" [class.is-invalid]="(state.touched && state.invalid)"
+            id="statefiled" required name="state" [(ngModel)]="signUpObj.state" placeholder="State">
+          <span class="invalid-feedback" *ngIf="(state.touched && state.invalid)">State is
+            required</span>
+        </div>
+        <div class="form-group">
+          <label for="countryfiled">Country<sup>*</sup></label>
+          <input type="text" class="form-control" #country="ngModel"
+            [class.is-invalid]="(country.touched && country.invalid)" id="countryfiled" required name="country"
+            [(ngModel)]="signUpObj.country" placeholder="Country">
+          <span class="invalid-feedback" *ngIf="(country.touched && country.invalid)">Country is
+            required</span>
+        </div>
+        <div class="form-group">
+          <label for="passwordfiled">Password<sup>*</sup></label>
+          <input type="password" class="form-control" #Password="ngModel"
+            [class.is-invalid]="(Password.touched && Password.invalid)" id="passwordfiled" minlength="8"  required name="password" [(ngModel)]="signUpObj.password" placeholder="Password"
+            (input)="confirmPassword.control.updateValueAndValidity()">
+          <span class="invalid-feedback" *ngIf="(Password.touched && Password.invalid &&  !Password.errors?.minlength)">Password is equired</span>
+          <span class="invalid-feedback" *ngIf="(Password.touched && Password.invalid) && Password.errors?.minlength">  Password must be at least 8 characters long.</span>
+        </div>
+        <div class="form-group">
+          <label for="confirmPasswordfiled">Confirm Password<sup>*</sup></label>
+          <input type="password" class="form-control" #confirmPassword="ngModel"
+            [class.is-invalid]="(confirmPassword.touched && confirmPassword.invalid)" id="confirmPasswordfiled" required
+            appConfirmEqualValidator="password" name="confirmPassword" [(ngModel)]="signUpObj.confirmPassword"
+            placeholder="Confirm Password">
+          <span class="invalid-feedback" *ngIf="(confirmPassword.touched && confirmPassword.errors?.required)">Confirm
+            Password is required</span>
+          <span class="invalid-feedback" *ngIf="confirmPassword.touched && confirmPassword.errors?.notEqual &&
+              !confirmPassword.errors?.required">
+            Password and Confirm Password does not match
+          </span>
+        </div>
+      </form>
+    </div>
+    <button pButton pRipple type="button" label="Sign Up" (click)="createAccount(signUpForm);"
+      class="p-button-rounded pl-4 pr-4  pt-2 pb-2 mr-2 mt-3 p-button-danger"></button>
+    <button pButton pRipple type="button" label="Cancel" (click)="clearSignUp(signUpForm);"
+      class="p-button-rounded p-button-outlined pl-4 pr-4  pt-2 pb-2 mt-3 p-button-danger"></button>
+  </ng-container>
+</p-sidebar>
+
+
+<p-dialog header="Recover Password" (onHide)="RecoverPasswordModalHide(recoverPassWordObj, resetPasswordObj)" [(visible)]="forgottPassword" [modal]="true" [style]="{width: '600px'}"
+  [baseZIndex]="10000" [draggable]="false" [resizable]="false" styleClass="recoverPassdialog">
+  <div *ngIf = "forgottPassword">
+    <ng-container *ngIf="!resetPasswordSecurityCode">
+      <div class="row justify-content-center m-0 mb-2">
+        <p-message [styleClass]="'text-break'" class="" severity="info" text="Please provide your registered account Phone Number to reset password" styleClass="p-mr-2"></p-message>
+      </div>
+      <div>
+        <form #forgotPaswordOtpForm="ngForm" autocomplete="off">
+          <div class="form-group row">
+            <label for="phoneNumber" class="col-sm-3 col-form-label">Registered Phone Number <sup>*</sup></label>
+            <div class="col-sm-9 pr-0 pl-0" >
+              <div class="d-flex flex-row col-sm-12 flex-nowrap">
+                <div class="col-4 pl-0 pr-0">
+                  <p-dropdown class="change-number-dropdown {{countryCode.touched && countryCode.invalid ? 'is-invalid':''}}" #countryCode="ngModel" [required]="true" (onChange)="countryCodeChange($event.value, recoverPassWordObj)"
+                    [appendTo]="countryCodeAppend" name="countryCode" [options]="COUNTRY_LIST"
+                    [(ngModel)]="recoverPassWordObj.code" optionLabel="countryName" [filter]="true" filterBy="countryName"
+                    [showClear]="false" placeholder="Country Code">
+                    <ng-template pTemplate="selectedItem">
+                      <div class="country-item country-item-value" *ngIf="recoverPassWordObj.code">
+                        <div>{{recoverPassWordObj.code.dial_code}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-country pTemplate="item">
+                      <div class="country-item w-100 d-flex justify-content-between">
+                        <div class="text-ellipse" [title]="country.countryName" style="width: 80%; word-break: break-all;">
+                          {{country.countryName }}</div>
+                        <div style="width: 20%">{{country.dial_code }}</div>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                </div>
+                <div class="col-8 pl-0 pr-0">
+                  <input type="tel" class="form-control" #registeredPhone="ngModel" [class.is-invalid]="(registeredPhone.touched && registeredPhone.invalid)" required  name="phone number" [(ngModel)]="recoverPassWordObj.phone" placeholder="xxxxxxxxxx">
+                </div>
+              </div>
+            </div>
+    
+          </div>
+          <div class="footer-btn">
+            <button pButton pRipple type="button" label="Cancel" (click)="forgottPassword=false"
+              class="p-button-rounded p-button-outlined float-right pl-4 pr-4  pt-2 pb-2 mt-3 b-secondary-btn"></button>
+            <button pButton pRipple type="submit" label="Submit" (click)="forotPasswodCodeGenerator(forgotPaswordOtpForm)"
+              class="p-button-rounded pl-4 pr-4 float-right mr-3 pt-2 pb-2 mt-3 b-primary-btn"></button>
+          </div>
+        </form>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="resetPasswordSecurityCode">
+      <div class="row justify-content-center m-0 mb-2">
+        <p-message [styleClass]="'text-break'" class="" severity="info" text="OTP sent to your registered mobile number. OTP is valid for 5 minute's" styleClass="p-mr-2"></p-message>
+      </div>
+      <div>
+        <form #forgotPaswordOtpForm2="ngForm" autocomplete="off">
+          <div class="form-group">
+            <label for="phoneNumber" class="">Registered Phone Number <sup>*</sup></label>
+            <div class="" >
+              <div class="d-flex flex-row flex-nowrap">
+                <div class="col-4 pl-0 pr-0">
+                  <p-dropdown class="change-number-dropdown" [readonly]="true" 
+                    [appendTo]="countryCodeAppend" name="country code" [options]="COUNTRY_LIST"
+                    [(ngModel)]="resetPasswordObj.code" optionLabel="countryName" [filter]="true" filterBy="countryName"
+                    [showClear]="false" placeholder="Country Code">
+                    <ng-template pTemplate="selectedItem">
+                      <div class="country-item country-item-value" *ngIf="resetPasswordObj.code">
+                        <div>{{resetPasswordObj.code.dial_code}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-country pTemplate="item">
+                      <div class="country-item w-100 d-flex justify-content-between">
+                        <div class="text-ellipse" [title]="country.countryName" style="width: 80%; word-break: break-all;">
+                          {{country.countryName }}</div>
+                        <div style="width: 20%">{{country.dial_code }}</div>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                </div>
+                <div class="col-8 pl-0 pr-0">
+                  <input type="text" class="form-control" #registeredPhone="ngModel" [class.is-invalid]="(registeredPhone.touched && registeredPhone.invalid)" readonly  name="phone number" [(ngModel)]="resetPasswordObj.phone" placeholder="xxxxxxxxxx">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New password<sup>*</sup></label>
+            <input type="password" class="form-control" #newPassword="ngModel"
+              [class.is-invalid]="(newPassword.touched && newPassword.invalid)"
+              id="newPassword" required minlength="8"  name="newPassword" [(ngModel)]="resetPasswordObj.newPassword"  placeholder="New Password"
+              (input)="newConfirmPassword.control.updateValueAndValidity()">
+            <span class="invalid-feedback" *ngIf="(newPassword.touched && newPassword.invalid && newPassword.errors?.required)">Password is equired</span>
+            <span class="invalid-feedback" *ngIf="(newPassword.touched && newPassword.invalid) && newPassword.errors?.minlength">  Password must be at least 8 characters long.</span>
+          </div>
+          <!-- <pre>{{newPassword.errors?(newPassword.errors | json):''}}</pre> -->
+          <div class="form-group">
+            <label for="newconfirmPasswordfiled">Confirm new password<sup>*</sup></label>
+            <input type="password" class="form-control" #newConfirmPassword="ngModel"
+              [class.is-invalid]="(newConfirmPassword.touched && newConfirmPassword.invalid)" id="newconfirmPasswordfiled" required
+              appConfirmEqualValidator="newPassword" name="newConfirmPassword" [(ngModel)]="resetPasswordObj.newConfirmPassword"
+              placeholder="Confirm Password">
+            <span class="invalid-feedback" *ngIf="(newConfirmPassword.touched && newConfirmPassword.errors?.required)">Confirm
+              Password is required</span>
+            <span class="invalid-feedback" *ngIf="newConfirmPassword.touched && newConfirmPassword.errors?.notEqual &&
+                !newConfirmPassword.errors?.required">
+              Password and Confirm Password does not match
+            </span>
+          </div>
+          <div *ngIf="resetPasswordSecurityCode" class="form-group">
+            <label for="otp" class="">Confirm OTP <sup>*</sup></label>
+            <div class="">
+              <input type="text" class="form-control" #confirmOTPRef="ngModel" [class.is-invalid]="(confirmOTPRef.touched && confirmOTPRef.invalid)"  required name="code" [(ngModel)]="resetPasswordObj.confirmOTP" placeholder="Enter OTP">
+              <span class="invalid-feedback" *ngIf="(confirmOTPRef.touched && confirmOTPRef.errors?.required)">OTP is required</span>
+            </div>
+          </div>
+          <div class="footer-btn">
+            <button pButton pRipple type="button" label="Cancel" (click)="forgottPassword=false"
+              class="p-button-rounded p-button-outlined float-right pl-4 pr-4  pt-2 pb-2 mt-3 b-secondary-btn"></button>
+            <button pButton pRipple type="submit" label="Update" (click)="forgotPasowrUpdateHandler(forgotPaswordOtpForm2)"
+              class="p-button-rounded pl-4 pr-4 float-right  pt-2 pb-2 mt-3 mr-3 b-primary-btn"></button>
+              <button pButton pRipple icon="pi pi-arrow-left" type="button" label="Back" (click)="resetPasswordSecurityCode = null;formReset(resetPasswordObj)"
+              class="p-button-rounded p-button-outlined float-left pl-4 pr-4  pt-2 pb-2 mt-3 b-secondary-btn"></button>
+          </div>
+        </form>
+      </div>
+    </ng-container>
+  </div>
+</p-dialog>
+
+<p-dialog header="Confirm Phone Number" #completeSignUp [(visible)]="completeSignUpModel" [modal]="true"
+  [style]="{width: '600px'}" [baseZIndex]="10000" [draggable]="false" [resizable]="false"
+  styleClass="completeSignUpModel">
+  <div class="mt-1">
+    <div class="row justify-content-center m-0 mb-2">
+      <p-message [styleClass]="'text-break'" class="" severity="info" text="OTP sent to your mobile number. OTP is valid for 5 minute's" styleClass="p-mr-2"></p-message>
+    </div>
+    <form #validateOTPForm="ngForm" autocomplete="off">
+      <div class="form-group row">
+        <label for="phoneNumber" class="col-sm-3 col-form-label">Phone Number <sup>*</sup></label>
+        <div class="col-sm-9 pr-0 pl-0" >
+          <div class="d-flex flex-row col-sm-12 flex-nowrap">
+            <div class="col-4 pl-0 pr-0">
+              <p-dropdown class="change-number-dropdown" [required]="true" [readonly]="!changeRegisterPhoneNumber" (onChange)="countryCodeChange($event.value, signUpObj)"
+                [appendTo]="countryCodeAppend" name="country code" [options]="COUNTRY_LIST"
+                [(ngModel)]="signUpObj.code" optionLabel="countryName" [filter]="true" filterBy="countryName"
+                [showClear]="false" placeholder="Country Code">
+                <ng-template pTemplate="selectedItem">
+                  <div class="country-item country-item-value" *ngIf="signUpObj.code">
+                    <div>{{signUpObj.code.dial_code}}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-country pTemplate="item">
+                  <div class="country-item w-100 d-flex justify-content-between">
+                    <div class="text-ellipse" [title]="country.countryName" style="width: 80%; word-break: break-all;">
+                      {{country.countryName }}</div>
+                    <div style="width: 20%">{{country.dial_code }}</div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+            <div class="col-8 pl-0 pr-0">
+              <input type="tel" class="form-control" #validatePhoneNumber="ngModel" [class.is-invalid]="(validatePhoneNumber.touched && validatePhoneNumber.invalid)" required [readonly]="!changeRegisterPhoneNumber" name="phone number" [(ngModel)]="signUpObj.phone" placeholder="xxxxxxxxxx">
+            </div>
+          </div>
+          <div class="change-number col-12" *ngIf="!changeRegisterPhoneNumber">
+            <span (click)="changePhoneNumber()">Change Phone Number</span>
+          </div>
+          <div class="col-sm-12 mt-2" *ngIf="changeRegisterPhoneNumber">
+            <button pButton pRipple type="button"  label="Confirm" (click)="confirmChangeNumber(signUpObj)"
+              class="p-button-rounded pl-4 pr-4 mr-4 b-btn-sm b-primary-btn"></button>
+            <button pButton pRipple type="button" label="Cancel" (click)="cancelChangeNumber()"
+              class="p-button-rounded  b b-btn-sm b-secondary-btn"></button>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-group row">
+        <label for="otp" class="col-sm-3 col-form-label">Confirm OTP <sup>*</sup></label>
+        <div class="col-sm-9">
+          <input type="text" class="form-control" #confirmOTPRef="ngModel" [class.is-invalid]="(confirmOTPRef.touched && confirmOTPRef.invalid)"  required name="code" [(ngModel)]="confirmOTP" placeholder="Enter OTP">
+          <div class="resend-Otp d-flex flex-row mt-2">
+            <div (click)="resendOTP()" [ngClass]="{'disable-resend':timeleft > 0}" class="text mr-2">Resend OTP</div>
+            <div class="timer">
+              <ng-container *ngIf="timeleft > 0">
+                {{(timeleft -(timeleft%60))/60 + ':' +(timeleft%60 >9 ? timeleft%60: ('0'+timeleft%60) )}}
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" label="Submit" (click)="completeRegistration(validateOTPForm)"
+      class="p-button-rounded pl-4 pr-4  pt-2 pb-2 mt-3 b-primary-btn"></button>
+    <button pButton pRipple type="button" label="Cancel" (click)="closeSignUpModal()"
+      class="p-button-rounded p-button-outlined pl-4 pr-4  pt-2 pb-2 mt-3 b-secondary-btn"></button>
+  </ng-template>
+</p-dialog>
+
+<ngx-loading [show]="showLoading"
+  [config]="{ animationType: ngxLoadingAnimationTypes,backdropBackgroundColour: 'rgb(27 25 25 / 60%)',fullScreenBackdrop: true}" [template]="customLoadingTemplate">
+</ngx-loading>
+
+<ng-template #customLoadingTemplate>
+  <div class="custom-text text-center">
+    <h6>
+      {{loadingCustomText+'...'}}
+    </h6>
+  </div>
+</ng-template>
+
+<div class="country-code-append-div" #countryCodeAppend></div>

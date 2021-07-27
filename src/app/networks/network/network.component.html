@@ -1,0 +1,10 @@
+<div id="container">
+    <ng-container *ngIf="options">
+        <app-relation-graph #relationGraph [options]="options" (nodeClick)="OnNodeClick($event)" (nodeDblclick)="rNodeDblClickHandler($event)" (relationsDblclick)="relationshipDoubleClickHandler($event)"></app-relation-graph>
+    </ng-container>
+</div>
+<!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+        <ion-icon name="refresh" (click)="refresh()"></ion-icon>
+    </ion-fab-button>
+</ion-fab> -->

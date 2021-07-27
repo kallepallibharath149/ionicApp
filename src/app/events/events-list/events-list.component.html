@@ -1,0 +1,631 @@
+<div class="events-container">
+  <div class="row m-0">
+    <div class="left-section"></div>
+    <div class="right-sec p-3 top-right">
+      <div class="md-cont">
+        <div class="groups-drop-down">
+          <div class="d-inline-block w-100" ngbDropdown #myDrop="ngbDropdown">
+              <button class="btn select mb-3 mt-2 w-100  mr-2" id="dropdownManual" ngbDropdownToggle>{{groupsListDetails[activeIndex]?groupsListDetails[activeIndex].name:'My Groups'}}</button>
+              <div infiniteScroll [scrollWindow]="false" alwaysCallback="true"
+              [infiniteScrollDisabled]="false" [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100"
+              (scrolled)="lazyLoadGroups()" class="w-100 groups-container" ngbDropdownMenu aria-labelledby="dropdownManual">
+              <ng-container *ngFor="let group of groupsListDetails; let i=index;">
+                  <button [title]="group.name" (click)="groupSelected(group, i, myDrop, $event)" class="{{(activeIndex == i)?'bg-success':''}} group-item text-ellipse" ngbDropdownItem><div [title]="group.name" class="text-ellipse">{{group.name}}</div><div *ngIf="i>1"><p-tag styleClass="p-mr-2" severity="info" [rounded]="true" icon="pi pi-user" [value]="group.groupMemberType"></p-tag></div></button>
+              </ng-container>
+              <div *ngIf="groupsLoading" class="text-center">
+                  <p-progressSpinner [style]="{width: '40px', height: '40px'}" [strokeWidth]="2"></p-progressSpinner>
+                 </div>
+              </div>
+            </div>
+       </div>
+  
+        <div class="top-section row ml-0 mr-0 justify-content-between align-items-center">
+          <div class="btn-group pt-1 pb-1">
+            <ng-container *ngFor="let tab of topTabs; let i=index; let first=first;">
+              <button type="button" (click)="activateTopTab(i, tab.label)" class="btn {{first?'first':''}} {{activeTopTabIndex == i ?'btn-selected':''}}">{{tab.label}}</button>
+            </ng-container>
+          </div>
+          <div class="pt-1 pb-1"><button pButton pRipple (click)="showCreateEvent()" type="button"
+              [label]="currentSelectedGoup?'Create Group Event':'Create Personal Event'" class="p-button-rounded pl-3 pr-3 action-btn primary"></button></div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="col-lg-1 col-md-0"></div> -->
+  </div>
+  <div class="row flex-nowrap m-0">
+    <div class="left-section">
+      <div class="card">
+        <div class="d-flex flex-column">
+          <div class="p-2 group-item {{activeIndex==i?'active':''}}" (click)="navigateGroup(i, group)"
+            *ngFor="let group of groupsListDetails;let i=index;">
+            <div [title]="group.name" class="text-ellipse">{{group.name}}</div>
+            <div *ngIf="i>1" class="memberType"><p-tag styleClass="p-mr-2" severity="info" [rounded]="true" icon="pi pi-user" [value]="group.groupMemberType"></p-tag></div>
+          </div>
+          <div *ngIf="groupsLoading" class="text-center">
+            <p-progressSpinner [style]="{width: '40px', height: '40px'}" [strokeWidth]="2"></p-progressSpinner>
+           </div>
+        </div>
+      </div>
+    </div>
+    <div  infiniteScroll [infiniteScrollDistance]="0.5" alwaysCallback="true" [infiniteScrollDisabled]="showEventsLoading" [immediateCheck]="true" [scrollWindow]="true" [infiniteScrollThrottle]="150" (scrolled)="lazyLoadEvents()" class="right-sec events-card">
+      <ng-container>
+      <ng-container *ngIf="(activeTopTabIndex == 0 || activeTopTabIndex ==1 || !activeTopTabIndex )">
+        <ng-container *ngFor ="let event of eventsList; let evIndex = index;">
+          <div class="card-sec mb-3">
+            <p-card [style]="{'maxWidth': '800px'}">
+              <div class="card-box">
+                <div class="header m-0 row justify-content-between position-relative">
+                  <div [title]="event.name" class="name">{{event.name}}</div>
+                  <div class="ev-options">
+                    <i (click)="eventOptions.toggle($event)" class="pi pi-ellipsis-v"></i>
+                  </div>
+                  <div class="hosts-contaier">
+                    <div class="ev-type"> 
+                    <p-chip [label]="event.groupType =='personal'? 'Personal Event':'Group Event'" [icon]="event.groupType =='personal'? 'pi pi-user':'fa fa-users'" styleClass="p-mr-2"></p-chip>
+                    <p-chip [label]="event.isListPublic? 'PUBLIC':'PRIVATE'" styleClass="p-mr-2"></p-chip>
+                    <p-chip [label]="event.createdByMe? 'Created By Me':''" styleClass="p-mr-2"></p-chip>
+                  </div>
+                    <div *ngIf="(event.status || event.invitationStatus) && !event.createdByMe" class="ev-status">
+                      <div>Status &nbsp;:</div>
+                     <div>
+                      <p-inplace >
+                        <ng-template pTemplate="display">
+                            {{event.invitationStatus}}<i class="pi pi-pencil"></i>
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                          <p-dropdown [options]="statusDropDownOptions" (onChange)="updateEventStatus(event, evIndex)" [(ngModel)]="event.invitationStatus" placeholder="Respond" optionLabel="label"  optionValue="value"></p-dropdown>
+                        </ng-template>
+                      </p-inplace>
+                     </div>
+                    </div>
+                    <div *ngIf="event.totalCoHostsCount" class="hosts">
+                      <div class="h-text">Co-Hosts</div>
+                     <div>
+                      <p-avatarGroup styleClass="p-mb-3">
+                        <ng-container *ngFor="let CoHost of event.coHosts">
+                          <p-avatar [title]="CoHost.profileName" [image]="CoHost.profileImageUrl?filesBaseURL+CoHost.profileImageUrl:'assets/images/profilepic.jpg'" size="large" [shape]="'circle'"></p-avatar>
+                        </ng-container>
+                        <p-avatar *ngIf="event.totalCoHostsCount>2" [label]="event.totalCoHostsCount-2" shape="circle" size="large" [style]="{'background-color':'#9c27b0', 'color': '#ffffff'}"></p-avatar>
+                    </p-avatarGroup>
+                    </div>
+                    </div>
+                  </div>
+                  <p-overlayPanel class="align_position" #eventOptions [showTransitionOptions]="'150ms'" [hideTransitionOptions]="'100ms'"
+                  [dismissable]="true" [style]="{minWidth: '194px', maxWidth: '194px'}">
+                  <ng-template pTemplate>
+                    <div style="position: relative;">
+                      <div class="menu-options d-flex flex-column">
+                        <ng-container *ngFor="let action of actionItems; let i=index;">
+                         <ng-container>
+                          <div *ngIf="action.label == 'Invite Members' && (event.createdByMe || (event.memberType =='Cohost' || event.memberType =='Host')) && event.groupType =='personal'" class="item" (click)="menuAction(action,i,action.label, eventOptions, evIndex, event);">
+                            {{action.label}}</div>
+                              <div *ngIf="action.label == 'Delete Event' && event.createdByMe" class="item" (click)="menuAction(action,i,action.label, eventOptions, evIndex, event);">
+                                {{action.label}}</div>
+                                <div *ngIf="action.label == 'Event Members' && (event.createdByMe || event.isListPublic || (event.memberType =='Cohost' || event.memberType =='Host'))" class="item" (click)="menuAction(action,i,action.label, eventOptions, evIndex, event);">
+                                  {{action.label}}</div>
+                                  <div *ngIf="action.label == 'Edit Event' && event.createdByMe" class="item" (click)="menuAction(action,i,action.label, eventOptions, evIndex, event);">
+                                    {{action.label}}</div>
+                         </ng-container>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-overlayPanel>
+                </div>
+                <div class="body-sec row m-0 mb-3">
+                  <div class="event-sec1">
+                    <ng-container *ngIf="event.eventImageUrl">
+                      <img class="ev-img" [src]="filesBaseURL+event.eventImageUrl" />
+                    </ng-container>
+                    <ng-container *ngIf="!event.eventImageUrl">
+                     <div class="no-ev-img"></div>
+                    </ng-container>
+                  </div>
+                  <div style="flex:1" class="event-sec2">
+                    <div>
+                      <p>
+                       {{event.description?event.description:'Some description'}}
+                      </p>
+                    </div>
+                    <div class="d-flex values">
+                      <div class="key">Event Start Date:</div>
+                      <div>{{event.startDatetime | date: 'MMM d, y h:mm a'}}</div>
+                    </div>
+                    <div *ngIf="event.endDatetime" class="d-flex values">
+                      <div class="key">Event End Date:</div>
+                      <div>{{event.endDatetime | date: 'MMM d, y h:mm a'}}</div>
+                    </div>
+                    <div *ngIf="event | addressFormatt" class="d-flex values">
+                      <div class="key">Venue:</div>
+                      <div  [innerHTML]="event | addressFormatt"></div>
+                    </div>
+                    <div  class="d-flex values">
+                      <div class="key">RVSP:</div>
+                      <div>{{event.rsvpByDate |date:'MMM d, y'}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="(activeTopTabIndex ==2 )">
+        <ng-container *ngFor ="let event of pendingEventsList; let evIndex = index;">
+          <div class="card-sec mb-3">
+            <p-card [style]="{'maxWidth': '800px'}">
+              <div class="card-box">
+                <div class="header m-0 row justify-content-between position-relative">
+                  <div class="name">{{event.name}}</div>
+                  <div class="hosts-contaier">
+                    <div class="ev-type">
+                      <p-chip [label]="event.groupType =='personal' || event.grouptType=='personal'? 'Personal Event':'Group Event'" [icon]="event.groupType =='personal' || event.grouptType=='personal'? 'pi pi-user':'fa fa-users'" styleClass="p-mr-2"></p-chip>
+                      <p-chip [label]="event.isListPublic? 'PUBLIC':'PRIVATE'" styleClass="p-mr-2"></p-chip>
+                      </div>
+                    <div *ngIf="(event.status || event.invitationStatus) && !event.createdByMe" class="ev-status">
+                      <div>Status &nbsp;:</div>
+                     <div>
+                      <p-inplace >
+                        <ng-template pTemplate="display">
+                            {{event.status}}<i class="pi pi-pencil"></i>
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                          <p-dropdown [options]="statusDropDownOptions" (onChange)="updateEventStatus(event)" [(ngModel)]="event.status" placeholder="Respond" optionLabel="label"  optionValue="value"></p-dropdown>
+                        </ng-template>
+                      </p-inplace>
+                     </div>
+                    </div>
+                    <div *ngIf="event.totalCoHostsCount" class="hosts">
+                      <div class="h-text">Hosts</div>
+                     <div>
+                      <img class="host-img" [src]="'assets/images/infosys.png'" />
+                      <img class="host-img" [src]="'assets/images/infosys.png'" />
+                    </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="body-sec row m-0 mb-3">
+                  <div class="event-sec1">
+                    <ng-container *ngIf="event.eventImageUrl">
+                      <img class="ev-img" [src]="filesBaseURL+event.eventImageUrl" />
+                    </ng-container>
+                    <ng-container *ngIf="!event.eventImageUrl">
+                     <div class="no-ev-img"></div>
+                    </ng-container>
+                  </div>
+                  <div style="flex:1" class="event-sec2">
+                    <div>
+                      <p>
+                       {{event.description}}
+                      </p>
+                    </div>
+                    <div class="d-flex values">
+                      <div class="key">Event Start Date:</div>
+                      <div>{{event.startDatetime | date: 'MMM d, y h:mm a'}}</div>
+                    </div>
+                    <div *ngIf="event.endDatetime" class="d-flex values">
+                      <div class="key">Event End Date:</div>
+                      <div>{{event.endDatetime | date: 'MMM d, y h:mm a'}}</div>
+                    </div>
+                    <div *ngIf="event | addressFormatt" class="d-flex values">
+                      <div class="key">Venue:</div>
+                      <div  [innerHTML]="event | addressFormatt"></div>
+                    </div>
+                    <div  class="d-flex values">
+                      <div class="key">RVSP:</div>
+                      <div>{{event.rsvpByDate |date:'MMM d, y'}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="actions" *ngIf="!event.actionStatus">
+                <div><button (click)="respondToEventInvitation(event, 'accepted')" pButton pRipple type="button" label="Accept" class="p-button-rounded p-button-sm p-button-success"></button></div>
+                <div><button (click)="respondToEventInvitation(event, 'tentative')"  pButton pRipple type="button" label="Tentative" class="p-button-rounded p-button-sm"></button></div>
+                <div><button (click)="respondToEventInvitation(event, 'rejected')" pButton pRipple type="button" label="Reject" class="p-button-rounded p-button-danger p-button-sm"></button></div>
+              </div>
+              <div class="actions" *ngIf="event.actionStatus">
+                <div *ngIf="event.actionStatus =='accepted'"><button  pButton pRipple type="button" label="Accepted" class="p-button-rounded p-button-sm p-button-success"></button></div>
+                <div *ngIf="event.actionStatus =='tentative'"><button pButton pRipple type="button" label="Tentative" class="p-button-rounded p-button-sm"></button></div>
+                <div *ngIf="event.actionStatus =='rejected'"><button pButton pRipple type="button" label="Rejected" class="p-button-rounded p-button-danger p-button-sm"></button></div>
+              </div>
+            </p-card>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="(activeTopTabIndex ==3 )">
+        <ng-container *ngFor ="let event of rejectedEventsList; let evIndex = index;">
+          <div class="card-sec mb-3">
+            <p-card [style]="{'maxWidth': '800px'}">
+              <div class="card-box">
+                <div class="header m-0 row justify-content-between position-relative">
+                  <div class="name">{{event.name}}</div>
+                  <div class="hosts-contaier">
+                    <div class="ev-type"> 
+                     <p-chip [label]="event.groupType =='personal' || event.grouptType=='personal'? 'Personal Event':'Group Event'" [icon]="event.groupType =='personal' || event.grouptType=='personal'? 'pi pi-user':'fa fa-users'" styleClass="p-mr-2"></p-chip>
+                    <p-chip [label]="event.isListPublic? 'PUBLIC':'PRIVATE'" styleClass="p-mr-2"></p-chip>
+                    </div>
+                    <div *ngIf="(event.status || event.invitationStatus) && !event.createdByMe" class="ev-status">
+                      <div>Status &nbsp;:</div>
+                     <div>
+                      <p-inplace >
+                        <ng-template pTemplate="display">
+                            {{event.status}}<i class="pi pi-pencil"></i>
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                          <p-dropdown [options]="statusDropDownOptions" (onChange)="updateEventStatus(event)" [(ngModel)]="event.status" placeholder="Respond" optionLabel="label"  optionValue="value"></p-dropdown>
+                        </ng-template>
+                      </p-inplace>
+                     </div>
+                    </div>
+                    <div *ngIf="event.totalCoHostsCount" class="hosts">
+                      <div class="h-text">Hosts</div>
+                     <div>
+                      <img class="host-img" [src]="'assets/images/infosys.png'" />
+                      <img class="host-img" [src]="'assets/images/infosys.png'" />
+                    </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="body-sec row m-0 mb-3">
+                  <div class="event-sec1">
+                    <ng-container *ngIf="event.eventImageUrl">
+                      <img class="ev-img" [src]="filesBaseURL+event.eventImageUrl" />
+                    </ng-container>
+                    <ng-container *ngIf="!event.eventImageUrl">
+                     <div class="no-ev-img"></div>
+                    </ng-container>
+                  </div>
+                  <div style="flex:1" class="event-sec2">
+                    <div>
+                      <p>
+                       {{event.description}}
+                      </p>
+                    </div>
+                    <div class="d-flex values">
+                      <div class="key">Event Start Date:</div>
+                      <div>{{event.startDatetime | date: 'MMM d, y h:mm a'}}</div>
+                    </div>
+                    <div *ngIf="event.endDatetime" class="d-flex values">
+                      <div class="key">Event End Date:</div>
+                      <div>{{event.endDatetime | date: 'MMM d, y h:mm a'}}</div>
+                    </div>
+                    <div *ngIf="event | addressFormatt" class="d-flex values">
+                      <div class="key">Venue:</div>
+                      <div  [innerHTML]="event | addressFormatt"></div>
+                    </div>
+                    <div  class="d-flex values">
+                      <div class="key">RVSP:</div>
+                      <div>{{event.rsvpByDate |date:'MMM d, y'}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="actions" *ngIf="!event.actionStatus">
+                <div><button (click)="respondToEventInvitation(event, 'accepted')" pButton pRipple type="button" label="Accept" class="p-button-rounded p-button-sm p-button-success"></button></div>
+                <div><button (click)="respondToEventInvitation(event, 'tentative')"  pButton pRipple type="button" label="Tentative" class="p-button-rounded p-button-sm"></button></div>
+                <div><button (click)="respondToEventInvitation(event, 'rejected')" pButton pRipple type="button" label="Reject" class="p-button-rounded p-button-danger p-button-sm"></button></div>
+              </div>
+              <div class="actions" *ngIf="event.actionStatus">
+                <div *ngIf="event.actionStatus =='accepted'"><button  pButton pRipple type="button" label="Accepted" class="p-button-rounded p-button-sm p-button-success"></button></div>
+                <div *ngIf="event.actionStatus =='tentative'"><button pButton pRipple type="button" label="Tentative" class="p-button-rounded p-button-sm"></button></div>
+                <div *ngIf="event.actionStatus =='rejected'"><button pButton pRipple type="button" label="Rejected" class="p-button-rounded p-button-danger p-button-sm"></button></div>
+              </div> -->
+            </p-card>
+          </div>
+        </ng-container>
+      </ng-container>
+      </ng-container>
+      <ng-container *ngIf="!showEventsLoading && noEvents">
+        <div class="p-10 card-sec text-center jumbotron">
+          <div class="container">
+              <h4 class="info">No Events found</h4>
+              <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+          </div>
+      </div>
+      </ng-container>
+      <ng-container *ngIf="showEventsLoading">
+        <ng-container *ngFor="let loadItem of contentLoadItems">
+          <div class="card w-100 mt-3 mb-3 p-formgrid">
+            <div class="p-field p-col-12 p-md-12 p-pr-md-6 p-pr-0">
+              <div class="custom-skeleton p-p-4">
+                <div class="p-d-flex p-mb-3">
+                  <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                  <div>
+                    <p-skeleton width="10rem" styleClass="p-mb-2"></p-skeleton>
+                    <p-skeleton width="5rem" styleClass="p-mb-2"></p-skeleton>
+                    <p-skeleton height=".5rem"></p-skeleton>
+                  </div>
+                </div>
+                <p-skeleton width="100%" height="150px"></p-skeleton>
+                <div class="p-d-flex p-jc-between p-mt-3">
+                  <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                  <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+</div>
+
+<ng-template #deleteEventConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title text-ellipse font-weight-bold" id="modal-basic-title">Delete &nbsp;<span [title]="currentActionEventObj.name">{{currentActionEventObj.name}}</span></h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure, Do you want to delete this Event?
+  </div>
+  <div class="modal-footer">
+    <button pButton pRipple (click)="deleteEvent(modal)" type="button" label="Delete" class="p-button-rounded pl-4 pr-4 mr-4 b-primary-btn"></button>
+    <button pButton pRipple (click)="modal.dismiss('Cross click')" type="button" label="Cancel" class="p-button-rounded pl-4 pr-4 mr-1 b-secondary-btn"></button>
+  </div>
+</ng-template>
+
+<ng-template #myConnectionsModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title font-weight-bold text-ellipse" id="modal-basic-title">Invite members to &nbsp;<span [title]="currentActionEventObj.name">{{currentActionEventObj.name}}</span></h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeConnectionModal(modal)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="row mt-2 mb-1 m-0 justify-content-end">
+      <div class="search col-md-6 col-sm-12">
+    <form autocomplete="off" (submit)="filterBySearch(myConnectionSearchTerm)">
+      <div class="search-box">
+        <input class="form-control" name="searchTerm" [(ngModel)]="myConnectionSearchTerm" id="" type="text" placeholder="Search your connections..">
+         <div class="searh-icon">
+        <i class="fa fa-search" (click)="filterBySearch(myConnectionSearchTerm)"></i>
+        <i *ngIf="myConnectionSearchTerm" (click)="clearSearch(myConnectionSearchTerm)" class="fa clear-search pi pi-times"></i>
+         </div>
+      </div>	
+    </form>
+  </div>
+  </div>
+  <div class="row m-0 d-flex justify-content-center p-1">
+    <p-message severity="info" closable="false" text="You can invite members to your Private Event from your connections"></p-message>
+  </div>
+  <div class="modal-body pt-1" infiniteScroll [scrollWindow]="false" alwaysCallback="true" [infiniteScrollDisabled]="showConnectionsLoad"  [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100" (scrolled)="lazyLoadMyConnections()" >
+    <div>
+    <div class="members-container">
+      <div  class="members-card position-relative" [ngClass]="{'last-member':last, 'first-member':first}" *ngFor="let member of myConnections; let first=first; let last= last ;">
+          <div class="image">
+            <img *ngIf="member.profileImageUrl" src="{{filesBaseURL+member.profileImageUrl}}" />
+            <img *ngIf="!member.profileImageUrl" [src]="'assets/images/profilepic.jpg'" />
+          </div>
+          <div #card  class="details">
+            <div class="d-flex flex-row align-items-center">
+              <div [title]="member.profileName" class="name">{{member.profileName}}</div>
+              <div class="icon position-relative" #ellipse  (click)="memberOptions.toggle($event)">
+                <i class="pi pi-ellipsis-v"></i>
+                <p-overlayPanel baseZIndex="3000" class="member_option"  styleClass="member_option" #memberOptions [showTransitionOptions]="'150ms'"
+                [hideTransitionOptions]="'100ms'" [dismissable]="true"
+                [style]="{minWidth: '150px', maxWidth: '180px', minHeight: '125x'}">
+                <ng-template pTemplate>
+                  <div style="position: relative;">
+                    <div class="menu-options d-flex flex-column">
+                      <ng-container *ngFor="let action of memberActionItems; let i=index;">
+                        <div (click)="inviteUsersToPrivateEvent(member)" class="item">
+                          {{action.label}}</div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </ng-template>
+               </p-overlayPanel>
+               <!-- <p-dialog [header]="member.profileName" modal="true" position="top" [appendTo]="modalAppend"  [(visible)]="member.showModal" [contentStyle]="{'width':'300px', 'height':'auto'}" [baseZIndex]="10000">
+                <div class="invite-container">
+                  <div class="members-container">
+                    <div  class="invite-prev position-relative">
+                        <div class="image">
+                          <img class="main-image" *ngIf="member.profileImageUrl" src="{{filesBaseURL+member.profileImageUrl}}" />
+                          <img class="blur-image" *ngIf="member.profileImageUrl" src="{{filesBaseURL+member.profileImageUrl}}" />
+                          <img class="main-image" *ngIf="!member.profileImageUrl" [src]="'assets/images/profilepic.jpg'" />
+                        </div>
+                        <div #card  class="details">
+                          <div class="d-flex flex-row align-items-center">
+                            <div [title]="member.profileName" class="name">{{member.profileName}}</div>
+                          </div>
+                          <div class="type d-flex flex-row">
+                            <div class="key">Relationship :</div>
+                            <div>&nbsp;{{member.whoInvited =='me'?member.hostRelationshipType:member.inviteeRelationshipType}}</div>
+                          </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row m-0 mt-2">
+                    <h5 class="invite-key p-text-bold">Invitation Text</h5>
+                    <input type="text"  placeholder="Invitation text" class="w-100" pInputText [(ngModel)]="member.invitationText"> 
+                  </div>
+                </div>
+                <ng-template pTemplate="footer">
+                  <button pButton pRipple [disabled]="member.invited" type="button" label="Invite" (click)="inviteMemberToGroup(member)" styleClass="p-button-sm" class="p-button-rounded b-btn-sm b-primary-btn"></button>
+                  <button pButton pRipple (click)="member.showModal=false" styleClass="p-button-sm" type="button" label="Cancel" class="p-button-rounded b-btn-sm b-secondary-btn p-button-outlined"></button>
+                </ng-template>
+              </p-dialog> -->
+              </div>
+            </div>
+            <div class="type">{{member.whoInvited =='me'?member.hostRelationshipType:member.inviteeRelationshipType}}</div>
+              <div *ngIf="member.invited" class="row justify-content-center mt-1 m-0">
+              <button pButton pRipple  type="button" label="Invited" styleClass="p-button-sm" class="p-button-rounded b-btn-sm b-primary-btn"></button>	
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="showConnectionsLoad">
+          <ng-container *ngFor="let item of loadingItems">
+            <div class="member-contentLoad">
+              <div class="p-d-flex p-mb-3 justify-content-center">
+                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+              </div>
+              <div class="w-100 p-2">
+                <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                <p-skeleton height=".5rem"  width="8rem"></p-skeleton>
+              </div>
+            </div> 
+          </ng-container>  
+        </ng-container>
+        <ng-container *ngIf="noConnections">
+          <div class="col-lg-9 col-md-6 p-10 no-groups jumbotron">
+            <div class="container text-center">
+              <h4 class="info">No connections</h4>
+              <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <p-scrollTop [style]="{width: '30px', height: '30px'}" target="parent"></p-scrollTop>
+  </div>
+  <div class="modal-footer">
+    <button pButton pRipple (click)="closeConnectionModal(modal)" type="button" label="Close" class="p-button-rounded b-secondary-btn"></button>
+  </div>
+</ng-template>
+
+<ng-template #eventInfo let-modal>
+  <div class="modal-header event-info">
+    <h5 class="modal-title text-ellipse" id="modal-basic-title">{{currentActionEventObj.name}}</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <ng-container>
+    <app-eventinfo [event]="currentActionEventObj" (inviteToEventClicked)="menuAction('', '', 'Invite Members','', currentActionEventIndex, currentActionEventObj )" [modalRef]="modal"></app-eventinfo>
+  </ng-container>
+  
+</ng-template>
+
+<p-sidebar [dismissible]="false" (onHide)="sideBarHide(createEvent)" [(visible)]="showCreateEventBar" [blockScroll]="true" position="right"
+  [baseZIndex]="10000" [style]="{width: '300px',height:'100%',overflow:'auto'}">
+  <h3 class="text-danger font-weight-bold">{{eventEditMode?'Edit Event':'Create New Event'}}</h3>
+  <div class="form-container">
+    <form autocomplete="off" #createEvent="ngForm">
+      <div class="pic-parent">
+        <div class="group-pic">
+          <span (click)="eventImageRef.value = null;">
+            <span *ngIf="!selecteEventImageUrl">
+              <i class="pi pi-pencil"></i><br>
+              <span>New Event</span>
+            </span>
+            <span *ngIf="selecteEventImageUrl" class="position-relative">
+              <img class="groupImage" [src]="selecteEventImageUrl" />
+              <i (click)="removeSelectedImage($event)" class="pi pi-times removeSelectedImage"></i>
+            </span>
+
+            <input type="file" name="groupImage" class="inputWraper" (change)="handleFiles($event);" #eventImageRef
+              accept="image/*" />
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="eventName" class="control-label">Event Name<sup>*</sup></label>
+        <input type="text" class="form-control" [class.is-invalid]="(eventName.touched && eventName.invalid)"
+          id="eventName" #eventName="ngModel" [(ngModel)]="newEvent.Name" required name="Name"
+          placeholder="Event Name" />
+        <span class="invalid-feedback" *ngIf="(eventName.touched && eventName.invalid)">Event Name is
+          required</span>
+      </div>
+      <div class="form-group">
+        <label for="evenDesc" class="control-label">Description<sup>*</sup></label>
+        <textarea class="form-control" id="evenDesc" #eventDesc="ngModel" [(ngModel)]="newEvent.Description" required
+          name="Description" placeholder="Event description"
+          [class.is-invalid]="(eventDesc.touched && eventDesc.invalid)" rows="5" cols="30" pInputTextarea></textarea>
+        <span class="invalid-feedback" *ngIf="(eventDesc.touched && eventDesc.invalid)">Event Description is
+          required</span>
+      </div>
+      <div class="form-group">
+        <label for="EventTypeId" class=" w-100 control-label">Event Type<sup>*</sup></label>
+        <p-dropdown [options]="eventTypes" class="{{eventType.touched && eventType.invalid ? 'ng-dirty is-invalid':''}}"  styleClass="{{eventType.touched && eventType.invalid ? 'is-invalid w-100':'w-100'}}" placeholder="Event Type"  id="EventTypeId" [required]="true" [styleClass]="'w-100'" name="EventTypeId" #eventType="ngModel" [(ngModel)]="newEvent.EventTypeId" optionLabel="description" optionValue="id"></p-dropdown>
+        <span class="invalid-feedback" *ngIf="(eventType.touched && eventType.invalid)">Event Type is
+          required</span>
+      </div>
+      <div class="form-group d-flex align-items-center">
+        <label for="EventTypeId" class="control-label">Public Event<sup>*</sup> &nbsp;&nbsp;:</label>
+        <p-inputSwitch  [style]="{'width':'2.9rem','height':'1.6rem','margin-left': '5px'}" name="isListPublic" #listPublic="ngModel" [(ngModel)]="newEvent.isListPublic"></p-inputSwitch>
+        <span class="invalid-feedback" *ngIf="(listPublic.touched && listPublic.invalid)">Public Event 
+          required</span>
+      </div>
+      <div class="form-group">
+        <label for="StartDatetime" class="control-label">Start Date and time<sup>*</sup></label>
+        <p-calendar placeholder="Start date and time" [minDate]="eventEditMode?null:todayDate" class="{{startDateTime.touched && startDateTime.invalid ? 'ng-dirty is-invalid':''}}" baseZIndex="10000" appendTo="body" id="StartDatetime"
+          [showTime]="true" [styleClass]="'w-100'" required name="StartDatetime" #startDateTime="ngModel" [(ngModel)]="newEvent.StartDatetime">
+        </p-calendar>
+        <span class="invalid-feedback" *ngIf="(startDateTime.touched && startDateTime.invalid)">Start Date Time is
+          required</span>
+      </div>
+      <!-- [class.is-invalid]="(startDateTime.touched && startDateTime.invalid)" -->
+      <div class="form-group">
+        <label for="EndDatetime" class="control-label">End Date and time<sup></sup></label>
+        <p-calendar [hourFormat]="24" placeholder="End date and time" [minDate]="eventEditMode?null:todayDate" baseZIndex="10000" appendTo="body"
+          id="EndDatetime" [styleClass]="'w-100'" [showTime]="true" name="EndDatetime" #EndDatetime="ngModel"
+          [(ngModel)]="newEvent.EndDatetime"></p-calendar>
+        <span class="invalid-feedback" *ngIf="(EndDatetime.touched && EndDatetime.invalid)">End Date Time is
+          required</span>
+      </div>
+      <div class="form-group">
+        <label for="Location" class="control-label">Location<sup></sup></label>
+        <input type="text" class="form-control" [class.is-invalid]="(Location.touched && Location.invalid)"
+          id="Location" #Location="ngModel" [(ngModel)]="newEvent.Location" name="Location"
+          placeholder="Location" />
+        <span class="invalid-feedback" *ngIf="(Location.touched && Location.invalid)">Location is
+          required</span>
+      </div>
+      <div class="form-group">
+        <label for="Street1" class="control-label">Street1<sup></sup></label>
+        <input type="text" class="form-control" [class.is-invalid]="(Street1.touched && Street1.invalid)" id="Street1"
+          #Street1="ngModel" [(ngModel)]="newEvent.Street1" name="Street1" placeholder="Street1" />
+        <span class="invalid-feedback" *ngIf="(Street1.touched && Street1.invalid)">Street1 is
+          required</span>
+      </div>
+
+      <div class="form-group">
+        <label for="Street2" class="control-label">Street2<sup></sup></label>
+        <input type="text" class="form-control" [class.is-invalid]="(Street2.touched && Street2.invalid)" id="Street2"
+          #Street2="ngModel" [(ngModel)]="newEvent.Street2" name="Street1" placeholder="Street1" />
+        <span class="invalid-feedback" *ngIf="(Street2.touched && Street2.invalid)">Street2 is
+          required</span>
+      </div>
+      <div class="form-group">
+        <label for="cityfiled">City<sup></sup></label>
+        <input type="text" class="form-control" #City="ngModel" [class.is-invalid]="(City.touched && City.invalid)"
+          id="cityfiled" name="City" [(ngModel)]="newEvent.City" placeholder="City">
+        <span class="invalid-feedback" *ngIf="(City.touched && City.invalid)">City is
+          required</span>
+      </div>
+      <div class="form-group">
+        <label for="statefiled">State<sup></sup></label>
+        <input type="text" class="form-control" #state="ngModel" [class.is-invalid]="(state.touched && state.invalid)"
+          id="statefiled" name="state" [(ngModel)]="newEvent.State" placeholder="State">
+        <span class="invalid-feedback" *ngIf="(state.touched && state.invalid)">State is
+          required</span>
+      </div>
+
+      <div class="form-group">
+        <label for="ZipPin">ZipPin<sup></sup></label>
+        <input type="text" class="form-control" #ZipPin="ngModel"
+          [class.is-invalid]="(ZipPin.touched && ZipPin.invalid)" id="ZipPin" name="ZipPin"
+          [(ngModel)]="newEvent.ZipPin" placeholder="ZipPin">
+        <span class="invalid-feedback" *ngIf="(ZipPin.touched && ZipPin.invalid)">ZipPin is
+          required</span>
+      </div>
+
+      <div class="form-group">
+        <label class="w-100" for="Rsvp">Rsvp Date<sup>*</sup></label>
+        <p-calendar inputId="basic" [minDate]="eventEditMode?null:todayDate" class="{{rsvpDate.touched && rsvpDate.invalid ? 'ng-dirty is-invalid':''}}" #rsvpDate="ngModel" [styleClass]="'w-100'" required placeholder="End date and time" baseZIndex="10000" appendTo="body" id="RsvpByDate" name="RsvpByDate" [(ngModel)]="newEvent.RsvpByDate"></p-calendar>
+        <span class="invalid-feedback" *ngIf="(rsvpDate.touched && rsvpDate.invalid)">Rsvp Date is
+          required</span>
+      </div>
+      <button pButton pRipple type="button" (click)="CreateEvent(createEvent)" [label]="eventEditMode?'Update':'Create Event'"
+      class="p-button-rounded pl-4 pr-4  pt-2 pb-2 mr-2 mt-3 p-button-danger"></button>
+    <button pButton pRipple type="button" label="Cancel" (click)="cancelCreateHide()"
+      class="p-button-rounded p-button-outlined pl-4 pr-4  pt-2 pb-2 mt-3 p-button-danger"></button>
+    </form>
+  </div>
+</p-sidebar>
+
+<div id="events-modal-ref"></div>
+<div id="events-members-options-append"></div>

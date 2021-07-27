@@ -1,0 +1,204 @@
+<div class="profile-container ">
+  <app-profile-cover-photos  [currentProfileDetails]="currentProfileDetails" [isMyProfile]="isMyProfile"></app-profile-cover-photos>
+  <div>
+    <div class="profile-name-section">
+      <div class="pl-1"><h3><b>{{currentProfileName}}</b></h3></div>
+   </div>
+  <form #profileDetailsForm="ngForm" ngForm novalidate autocomplete="off">
+   <div class="details-container">
+     <div class="details-block">
+       <div class="row header m-0 "><h4 class="font-weight-bolder head ml-4 mb-0">Personel Details</h4></div>
+       <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+         <div class="field">
+         <span>First Name<sup>*</sup> &nbsp;&nbsp;:</span>
+         </div>
+         <div class="value">
+         <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+                <span class="fld">{{userDetailsForm.firstName}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input type="text" name="firstName" (input)="showInlineEdit()" required #firstName="ngModel" [(ngModel)]="userDetailsForm.firstName" pInputText>
+              </ng-template>
+        </p-inplace>
+         </span>
+         </div>
+       </div>
+       <div class="row  d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>Last Name<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+                <span class="fld">{{userDetailsForm.lastName}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input type="text" (input)="showInlineEdit()"  name="lastName" required [(ngModel)]="userDetailsForm.lastName" pInputText>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>Phone Number<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="true" #inlineEdit>
+            <ng-template pTemplate="display">
+                <span class="fld">{{userDetailsForm.countryCode}}&nbsp;{{userDetailsForm.phone}}</span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input type="text"  pInputText>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>E-Mail<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="true" #inlineEdit>
+            <ng-template pTemplate="display">
+                <span class="fld">{{userDetailsForm.email}}</span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input type="text"  pInputText>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>Address1<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+            <span class="fld">{{userDetailsForm.address1}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <textarea rows="5" cols="30" (input)="showInlineEdit()" name="address1" required [(ngModel)]="userDetailsForm.address1" pInputTextarea></textarea>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>Address2<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+            <span class="fld">{{userDetailsForm.address2}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <textarea rows="5" cols="30" (input)="showInlineEdit()" name="address2" required [(ngModel)]="userDetailsForm.address2" pInputTextarea></textarea>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>City<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+                <span class="fld">{{userDetailsForm.city}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input type="text" (input)="showInlineEdit()"  name="city" required [(ngModel)]="userDetailsForm.city"  pInputText>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>State<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+              <span class="fld">{{userDetailsForm.state}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input type="text" (input)="showInlineEdit()" name="state" required [(ngModel)]="userDetailsForm.state" pInputText>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>Country<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+              <span class="fld">{{userDetailsForm.country}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input  type="text" (input)="showInlineEdit()"  name="country" required [(ngModel)]="userDetailsForm.country" pInputText>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div class="row d-flex row-sec align-items-center mt-3 w-100 m-0">
+        <div class="field">
+        <span>Zip Pin<sup>*</sup> &nbsp;&nbsp;:</span>
+        </div>
+        <div class="value">
+        <span>
+          <p-inplace [disabled]="!isMyProfile" #inlineEdit>
+            <ng-template pTemplate="display">
+              <span class="fld">{{userDetailsForm.zipPin}} <i *ngIf="isMyProfile" class="pi ml-2 pi-pencil"></i></span>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <input type="text" (input)="showInlineEdit()" name="zipPin" required [(ngModel)]="userDetailsForm.zipPin"  pInputText>
+            </ng-template>
+        </p-inplace>
+        </span>
+        </div>
+      </div>
+      <div *ngIf="showFooter" class="row d-flex footer-sticky align-items-center mt-3 w-100 m-0">
+        <div class="footer">
+          <button pButton pRipple styleClass="p-button-sm" (click)="cancelChanges()" type="button" label="Cancel" class="p-button-rounded mt-2 mr-2 float-right b-secondary-btn p-button-outlined"></button>
+          <button pButton pRipple type="button" label="Save" (click)="saveChanges()" styleClass="p-button-sm" class="p-button-rounded mt-2 float-right  b-primary-btn mr-4"></button>
+        </div>
+      </div>
+     </div>
+   </div>
+  </form>
+
+  <ngx-loading [show]="updateInProgress"
+  [config]="{ animationType: ngxLoadingAnimationTypes,backdropBackgroundColour: 'rgb(27 25 25 / 60%)',fullScreenBackdrop: true}" [template]="customLoadingTemplate">
+</ngx-loading>
+
+<ng-template #customLoadingTemplate>
+  <div class="custom-text text-center">
+    <h6>
+      {{'Updating Profile Details'+'...'}}
+    </h6>
+  </div>
+</ng-template>
+  </div>
+</div>
+

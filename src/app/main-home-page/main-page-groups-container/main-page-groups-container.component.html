@@ -1,0 +1,15 @@
+<div>
+    <!-- don't add any child elements inside start--- infinite scroll -->
+    <div scrollWindow="false" [infiniteScrollDisabled]="reachedEndOfPosts" immediateCheck="true" infiniteScroll [infiniteScrollDistance]="0.6" [infiniteScrollThrottle]="150" (scrolled)="onScroll()">
+        <app-post [currentGroup]="currentGroup" [posts]="latestPosts"></app-post>
+    </div>
+    <!-- don't add any child elements inside end--- infinite scroll -->
+
+    <div class="text-center">
+        <p-progressSpinner *ngIf="showLoader"></p-progressSpinner>
+        <p-messages [(value)]="userMessage" [closable]="false" [enableService]="false"></p-messages>
+    </div>
+ 
+</div>
+
+

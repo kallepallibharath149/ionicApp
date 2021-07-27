@@ -1,0 +1,328 @@
+<div class="connection-con">
+<div class="tabscont scroll-data">
+<div class="row m-3 w-100 justify-content-center">
+        <div class="btn-group">
+            <ng-container *ngFor="let tab of connectionTabs; let i=index;">
+                <button type="button"  (click)="tabClick(i,tab.label)"  class="btn {{activeTabIndex == i ?' btn-selected':''}}">{{tab.label}}</button>
+            </ng-container>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-end w-100 align-items-center flex-wrap">
+    <div>
+        <div class="search m-3">
+			<form #connectionSearch="ngForm" ngForm autocomplete="off" (submit)="filterBySearch(activeTabName,searchTerm)">
+				<div class="search-box">
+					<input class="form-control" name="searchTerm" (input)="connectionsSearch(searchTerm)" [(ngModel)]="searchTerm" id="" type="text" placeholder="Search your connections...">
+				   <div class="searh-icon">
+					<i (click)="filterBySearch(activeTabName,searchTerm)" class="fa fa-search"></i>
+					<i  (click)="clearSearch(activeTabName,searchTerm)" *ngIf="searchTerm" class="fa clear-search pi pi-times"></i>
+				   </div>
+				</div>	
+			</form>
+		</div>  
+    </div>
+    <div class="m-3">
+        <button pButton pRipple type="button" (click)="inviteClicked()" label="Invite New Connection" class="p-button-rounded pl-4 pr-4 mr-4 b-primary-btn"></button>
+    </div>
+</div>
+<div class="tabs-cont"  infiniteScroll [scrollWindow]="true" alwaysCallback="true"
+[infiniteScrollDisabled]="showSkeliton" [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100"
+(scrolled)="lazyLoad()">
+<ng-container *ngIf="activeTabName =='Connections'">
+    <div class="d-flex m-3 justify-content-center flex-row flex-wrap">
+        <ng-container *ngFor="let person of myConnections">
+         <div class="connection" (click)="navigateToProfile(person)">
+             <div class="box-item">
+                 <div>
+                     <img class="round-shape" *ngIf="person.profileImageUrl" width="80" height="80"
+                         src="{{filesBaseURL+person.profileImageUrl}}" />
+                     <div class="no-p-img round-shape" *ngIf="!person.profileImageUrl"></div>
+                 </div>
+                 <div class="name">{{person.profileName}}</div>
+                 <div class="key">
+                         <div>Relationship Type:&nbsp;</div>
+                         <div>{{person.whoInvited =='me'?person.hostRelationshipType:person.inviteeRelationshipType}}</div>
+                     </div>
+             </div>
+             <div>
+     
+             </div>
+         </div>
+        </ng-container>
+        <ng-container *ngIf="showSkeliton">
+            <ng-container *ngFor="let item of loadingItems">
+                <div class="member-contentLoad">
+                    <div class="p-d-flex p-mb-3 justify-content-center">
+                        <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                    </div>
+                    <div class="w-100 p-2">
+                        <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                        <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                        <p-skeleton height=".5rem"  width="8rem"></p-skeleton>
+                    </div>
+                </div> 
+            </ng-container> 
+        </ng-container>
+        <ng-container *ngIf="noConnections">
+            <div class="col-lg-9 col-md-6 p-10 no-groups jumbotron">
+                <div class="container text-center">
+                    <h4 class="info">No Connections</h4>
+                    <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>
+<ng-container *ngIf="activeTabName =='Pending Invitations'">
+    <div class="d-flex m-3 justify-content-center flex-row flex-wrap">
+        <ng-container *ngFor="let invitation of pendingInvitations">
+            <div class="panel pending" style="width: 300px;">
+                <div class="box-item">
+                    <div>
+                        <img class="round-shape" *ngIf="invitation.profileImageUrl" width="150" height="150"
+                            src="{{filesBaseURL+invitation.profileImageUrl}}" />
+                        <div class="no-p-img round-shape" *ngIf="!invitation.profileImageUrl"></div>
+                    </div>
+                    <div class="name">{{invitation.profileName}}</div>
+
+                      <div class="key">
+                          <div>Relationship Type:&nbsp;</div>
+                          <div>{{invitation.hostRelationshipType}}</div>
+                      </div>
+
+
+                        <div class="key">
+                            <div>Invitation status:&nbsp;</div>
+                            <div>{{invitation.invitationStatus}}</div>
+                        </div>
+                        <div class="input-form" *ngIf="!invitation.respondedLabel">
+                            <form #acceptForm="ngForm" autocomplete="off">
+                                <p-dropdown [style]="{'width': '200px','text-align':'left'}" dataKey="id" name="relationShip" required
+                                    [options]="relationshipType" [(ngModel)]="invitation.selectedRelationShipType"
+                                    placeholder="Select a Relationship" optionLabel="description" [showClear]="true">
+                                    <ng-template pTemplate="selectedItem">
+                                        <div *ngIf="invitation.selectedRelationShipType">
+                                            {{invitation.selectedRelationShipType.description?invitation.selectedRelationShipType.description:"N/A"}}
+                                        </div>
+                                    </ng-template>
+                                    <ng-template let-option pTemplate="item">
+                                        <div>
+                                            {{option.description?option.description:'N/A' }}
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </form>
+                            <div class="mt-2">
+                                <button pButton pRipple type="button" (click)="acceptReject('accept', invitation,acceptForm )" label="Accept" class="mr-1 ml-1 p-button-rounded"></button>
+                                <button pButton pRipple type="button" (click)="acceptReject('reject', invitation, acceptForm)" label="Reject" class=" mr-1 ml-1 p-button-rounded p-button-danger"></button>
+                            </div>
+                        </div> 
+                        <div class="input-form" *ngIf="invitation.respondedLabel">
+                            <button icon="pi pi-check" pButton pRipple type="button" [label]="invitation.respondedLabel" class="p-button-rounded mt-3 b-primary-btn"></button>
+                        </div>   
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="showSkeliton">
+            <ng-container *ngFor="let item of loadingItems">
+                <div class="member-contentLoad">
+                    <div class="p-d-flex p-mb-3 justify-content-center">
+                        <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                    </div>
+                    <div class="w-100 p-2">
+                        <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                        <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                        <p-skeleton height=".5rem"  width="8rem"></p-skeleton>
+                    </div>
+                </div> 
+            </ng-container> 
+        </ng-container>
+        <ng-container *ngIf="noPendingInvitations">
+            <div class="col-lg-9 col-md-6 p-10 no-groups jumbotron">
+                <div class="container text-center">
+                    <h4 class="info">No Pending Invitations</h4>
+                    <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                </div>
+            </div>
+        </ng-container> 
+    </div>
+</ng-container>
+<ng-container *ngIf="activeTabName =='Sent Invitations'">
+    <div class="d-flex m-3 justify-content-center flex-row flex-wrap">
+        <ng-container *ngFor="let invitation of sentInvitations">
+            <div class="panel">
+                <div class="box-item">
+                    <div>
+                        <img class="round-shape" *ngIf="invitation.profileImageUrl" width="150" height="150"
+                            src="{{filesBaseURL+invitation.profileImageUrl}}" />
+                        <div class="no-p-img round-shape" *ngIf="!invitation.profileImageUrl"></div>
+                    </div>
+                    <div class="name">{{invitation.profileName}}</div>
+                    <div class="key">
+                            <div>Relationship Type:&nbsp;</div>
+                            <div>{{invitation.hostRelationshipType}}</div>
+                        </div>
+                      
+                          <div class="key">
+                              <div>Invitation status:&nbsp;</div>
+                              <div>{{invitation.invitationStatus}}</div>
+                          </div>
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="showSkeliton">
+            <ng-container *ngFor="let item of loadingItems">
+                <div class="member-contentLoad">
+                    <div class="p-d-flex p-mb-3 justify-content-center">
+                        <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                    </div>
+                    <div class="w-100 p-2">
+                        <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                        <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                        <p-skeleton height=".5rem"  width="8rem"></p-skeleton>
+                    </div>
+                </div> 
+            </ng-container> 
+        </ng-container>
+        <ng-container *ngIf="noSentInvitations">
+            <div class="col-lg-9 col-md-6 p-10 no-groups jumbotron">
+                <div class="container text-center">
+                    <h4 class="info">No Sent Invitations</h4>
+                    <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>
+</div>
+
+</div>
+
+<ng-template #inviteForConnectionModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title font-weight-bold" id="modal-basic-title">New Connection</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="row mt-2 mb-1 m-0 justify-content-end">
+    <!-- <div class="search col-md-6 col-sm-12">
+        <form autocomplete="off">
+            <div class="search-box">
+                <input class="form-control" name="searchTerm" [(ngModel)]="myConnectionSearchTerm" id="" type="text" placeholder="Search your connections..">
+               <div class="searh-icon">
+                <i class="fa fa-search" (click)="filterBySearch(myConnectionSearchTerm)"></i>
+                <i *ngIf="myConnectionSearchTerm" (click)="clearSearch(myConnectionSearchTerm)" class="fa clear-search pi pi-times"></i>
+               </div>
+            </div>	
+        </form>
+    </div> -->
+    </div>
+    <!-- <div class="row m-0 d-flex justify-content-center p-1">
+        <p-message severity="info" closable="false" text="You can invite members to this group from your connections"></p-message>
+    </div> -->
+    <div>
+        <form #searchForm="ngForm" autocomplete="off" (submit)="searchMembers(newConnectionsSearchTerm, searchForm)">
+            <div class="d-flex flex-wrap w-100 ml-0  p-2">
+                <div class="mt-2 mr-3">
+                    <span class="p-input-icon-right">
+                        <i class="pi pi-search"></i>
+                        <input style="width:300px" type="text" required minlength="1" placeholder="Search People" name="search"
+                            [(ngModel)]="newConnectionsSearchTerm" pInputText />
+                    </span>
+                </div>
+                <div class="mt-2">
+                    <button icon="pi pi-search" pButton pRipple type="button" (click)="searchMembers(newConnectionsSearchTerm, searchForm)" label="Search People" class="p-button-rounded b-primary-btn mr-2"></button>
+                    <button *ngIf="initialnewConnectionsSearch" pButton pRipple type="button" (click)="clearSearchMember()" label="Clear" class="p-button-rounded b-secondary-btn"></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-body pt-1" infiniteScroll [scrollWindow]="false" [infiniteScrollDisabled]="showSkeliton" alwaysCallback="true"  [infiniteScrollDistance]="0.2" [infiniteScrollThrottle]="100" (scrolled)="lazyLoadMyConnections()" >
+      <div>
+        <div class="members-container">
+            <ng-container *ngFor="let person of newSearchProfiles">
+                <div class="panel pending" style="width: 300px;">
+                    <div class="box-item">
+                        <div>
+                            <img class="round-shape" *ngIf="person.profileImageUrl" width="150" height="150"
+                                src="{{filesBaseURL+person.profileImageUrl}}" />
+                            <div class="no-p-img round-shape" *ngIf="!person.profileImageUrl"></div>
+                        </div>
+                        <div class="name">{{person.profileName}}</div>
+                        <div class="input-form" *ngIf="!person.invited">
+                            <form #inviteForm="ngForm" autocomplete="off">
+                                <p-dropdown [style]="{'width': '200px','text-align':'left'}" dataKey="id" name="relationShip" required
+                                    [options]="relationshipType" [(ngModel)]="person.selectedRelationShipType"
+                                    placeholder="Select a Relationship" optionLabel="description" [showClear]="true">
+                                    <ng-template pTemplate="selectedItem">
+                                        <div *ngIf="person.selectedRelationShipType">
+                                            {{person.selectedRelationShipType.description?person.selectedRelationShipType.description:"N/A"}}
+                                        </div>
+                                    </ng-template>
+                                    <ng-template let-option pTemplate="item">
+                                        <div>
+                                            {{option.description?option.description:'N/A' }}
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                                <button icon="pi pi-user-plus" (click)="inviteForConnection(person,inviteForm)" pButton pRipple type="button" label="Invite for connection" class="p-button-rounded mt-3 b-primary-btn"></button>
+                            </form>
+                        </div>
+                        <div *ngIf="person.invited">
+                            <button icon="pi pi-check" pButton pRipple type="button" label="Invited"
+                                class="p-button-rounded mt-3 b-primary-btn"></button>
+                        </div>
+                    </div>
+                    <div>
+    
+                    </div>
+                </div>
+            </ng-container>
+                <ng-container *ngIf="showConnectionsLoad">
+                    <ng-container *ngFor="let item of loadingItems">
+                        <div class="member-contentLoad">
+                            <div class="p-d-flex p-mb-3 justify-content-center">
+                                <p-skeleton shape="circle" size="4rem" styleClass="p-mr-2"></p-skeleton>
+                            </div>
+                            <div class="w-100 p-2">
+                                <p-skeleton width="8rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton width="4rem" styleClass="p-mb-2"></p-skeleton>
+                                <p-skeleton height=".5rem"  width="8rem"></p-skeleton>
+                            </div>
+                        </div> 
+                    </ng-container>  
+                </ng-container>
+                <ng-container *ngIf="nonewSearchProfile">
+                    <div class="col-lg-12 col-md-12 m-3 p-10 no-groups jumbotron">
+                        <div class="container text-center">
+                            <h4 class="info">No Members found</h4>
+                            <img width="200" height="200" src="/assets/images/svgs/community.svg" />
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="(!nonewSearchProfile) && (!initialnewConnectionsSearch)">
+                    <div class="col-lg-12 col-md-12 m-3 p-10 no-groups jumbotron">
+                        <div class="container text-center">
+                            <h4 class="info">Search people ...</h4>
+                            <img width="200" height="200" src="/assets/images/svgs/no-results.svg" />
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+      </div>
+      <p-scrollTop [style]="{width: '30px', height: '30px'}" target="parent"></p-scrollTop>
+    </div>
+    <div class="modal-footer">
+        <button pButton pRipple (click)="modal.dismiss('Cross click')" type="button" label="Close" class="p-button-rounded b-secondary-btn"></button>
+    </div>
+</ng-template>
+
+<div id="newConnection"></div>

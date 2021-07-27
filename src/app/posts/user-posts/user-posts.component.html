@@ -1,0 +1,7 @@
+<div class="posts-container">
+    <div class="post-content" *ngIf="postsArray && postsArray.length > 0">
+     <div class="pt-4" *ngFor="let post of postsArray;let i = index; let first = first;  let last = last;">
+       <app-post-details [currentGroupId]="currentGroupId" [postIndex]="i" [lastItem]="last" [userDetails]="userDetails" [postDetails]="post"></app-post-details>
+     </div>   
+    </div>
+</div>
